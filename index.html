@@ -12,6 +12,7 @@
 @media(max-width:850px){.layout{grid-template-columns:1fr}.main{min-height:570px}.stage{min-height:350px}.route-step span{display:none}.route-step{padding:9px 4px}.route-step b{margin-bottom:0}.cube-wrap{width:min(450px,100%)}}
 @media(max-width:520px){.shell{padding:14px 10px 30px}.hero h1{font-size:29px}.badge{display:none}.main,.side{padding:15px}.card{border-radius:20px}.net-grid{gap:8px}.net-choice{min-height:150px;padding:6px}.net-svg{height:135px}.question{font-size:21px}.cube-svg{max-height:330px}.actions{grid-template-columns:1fr}.stage{min-height:320px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+.stage{will-change:transform,opacity;transform:translateZ(0)}.cube-wrap{will-change:transform;transform:translateZ(0)}.volume-face{stroke:none}.volume-edge{stroke-linecap:round}.volume-edge.volume-hidden{stroke-dasharray:8 7}
 </style>
 </head>
 <body>
@@ -56,7 +57,7 @@ function cubeSVG(opts={}){
  if(opts.mode==='parallel'){under+=polygon(['A','B','B1','A1'],'plane-fill')+polygon(['D','C','C1','D1'],'plane-fill alt')}
  if(opts.mode==='perpendicular'){under+=polygon(['A','B','C','D'],'plane-fill alt')+polygon(['A','B','B1','A1'],'plane-fill')}
  if(opts.section){const pts=sortedSection(opts.section);over+=`<polygon class="slice" points="${pts.map(p=>p.join(',')).join(' ')}"/>`}
- if(opts.mode==='volume'){under+=polygon(['B','C','D'],'volume-face');over+=`<path class="volume-edge" d="M${proj(P3.A1).join(' ')} L${proj(P3.B).join(' ')} M${proj(P3.A1).join(' ')} L${proj(P3.C).join(' ')} M${proj(P3.A1).join(' ')} L${proj(P3.D).join(' ')}"/>`}
+ if(opts.mode==='volume'){under+=polygon(['B','C','D'],'volume-face');over+=`<path class="volume-edge" d="M${proj(P3.A1).join(' ')} L${proj(P3.B).join(' ')} M${proj(P3.A1).join(' ')} L${proj(P3.C).join(' ')} M${proj(P3.A1).join(' ')} L${proj(P3.D).join(' ')} M${proj(P3.B).join(' ')} L${proj(P3.C).join(' ')} M${proj(P3.B).join(' ')} L${proj(P3.D).join(' ')}"/><path class="volume-edge volume-hidden" d="M${proj(P3.D).join(' ')} L${proj(P3.C).join(' ')}"/>`}
  const hidden=edges.filter(e=>e[2]).map(([a,b])=>`<line class="edge hidden" x1="${proj(P3[a])[0]}" y1="${proj(P3[a])[1]}" x2="${proj(P3[b])[0]}" y2="${proj(P3[b])[1]}"/>`).join('');
  const solid=edges.filter(e=>!e[2]).map(([a,b])=>`<line class="edge${opts.mode==='perpendicular'&&a==='A'&&b==='A1'?' accent':''}" x1="${proj(P3[a])[0]}" y1="${proj(P3[a])[1]}" x2="${proj(P3[b])[0]}" y2="${proj(P3[b])[1]}"/>`).join('');
  const labels=Object.keys(P3).map(n=>{const p=proj(P3[n]),d=labelPos[n];return `<g class="vertex-label"><circle cx="${p[0]+d[0]}" cy="${p[1]+d[1]}" r="11"/><text x="${p[0]+d[0]}" y="${p[1]+d[1]}">${n.replace('1','₁')}</text></g>`}).join('');
