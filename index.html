@@ -3,163 +3,90 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0f172a">
-<title>立方体展开图 · 逐级空间挑战</title>
+<meta name="theme-color" content="#10172a">
+<title>高中立体几何 · 六关空间挑战</title>
 <style>
-:root{--bg:#f5f7fb;--card:#fff;--ink:#0f172a;--muted:#64748b;--line:#dbe3ef;--brand:#4f46e5;--brand2:#7c3aed;--good:#059669;--bad:#dc2626;--cut:#ef4444;--hinge:#2563eb;--shadow:0 18px 50px rgba(15,23,42,.10)}
-*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;color:var(--ink);background:radial-gradient(circle at 10% 0,#e0e7ff 0,transparent 28%),radial-gradient(circle at 100% 10%,#f3e8ff 0,transparent 30%),var(--bg)}button{font:inherit}
-.shell{width:min(1180px,100%);margin:auto;padding:22px 16px 46px}.hero{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.hero h1{margin:0;font-size:clamp(27px,5vw,44px);letter-spacing:-.045em}.hero p{margin:8px 0 0;color:var(--muted);line-height:1.65}.badge{flex:none;border:1px solid #c7d2fe;background:#eef2ff;color:#3730a3;border-radius:999px;padding:8px 12px;font-weight:800;font-size:13px}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:17px 0}.stat{background:rgba(255,255,255,.82);border:1px solid rgba(219,227,239,.95);border-radius:16px;padding:11px 14px;backdrop-filter:blur(8px)}.stat b{display:block;font-size:22px}.stat span{font-size:12px;color:var(--muted)}
-.layout{display:grid;grid-template-columns:1.28fr .72fr;gap:18px}.card{background:rgba(255,255,255,.95);border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow)}.main{padding:20px;min-height:650px}.side{padding:20px;display:flex;flex-direction:column;gap:15px}.topline{display:flex;justify-content:space-between;align-items:center;gap:10px}.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:850}.level-pill{font-size:13px;font-weight:850;color:#4338ca;background:#eef2ff;border-radius:999px;padding:7px 10px}.question{font-size:clamp(20px,3.7vw,30px);font-weight:900;line-height:1.38;margin:14px 0 5px}.sub{color:var(--muted);font-size:14px;line-height:1.6}.stage{min-height:410px;display:grid;place-items:center;padding:16px 0 8px;overflow:auto}.progress{height:9px;background:#e5e7eb;border-radius:999px;overflow:hidden;margin-top:10px}.progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--brand2));transition:.35s ease;border-radius:inherit}
-/* 单个展开图 */.net{position:relative}.face{position:absolute;display:grid;place-items:center;border:2px solid #0f172a;background:linear-gradient(145deg,#fff,#f8fafc);font-weight:950;border-radius:9px;box-shadow:inset 0 0 0 1px #fff;user-select:none}.face:after{content:"";position:absolute;inset:5px;border:1px dashed #cbd5e1;border-radius:5px}.face.target{background:#eef2ff;border-color:#4f46e5;color:#3730a3;transform:scale(1.035);z-index:2}.face.answer{background:#ecfdf5;border-color:#059669;color:#047857}.face.wrong{background:#fef2f2;border-color:#dc2626;color:#b91c1c}
-/* 选择 */.number-choices{display:grid;grid-template-columns:repeat(5,1fr);gap:9px}.num-choice,.text-choice,.net-option{border:1px solid #d7deea;background:#fff;border-radius:14px;cursor:pointer;transition:.18s ease}.num-choice{min-height:52px;font-size:20px;font-weight:950}.num-choice:hover,.text-choice:hover,.net-option:hover{transform:translateY(-2px);border-color:#818cf8;box-shadow:0 8px 18px rgba(79,70,229,.11)}button:disabled{cursor:default!important;transform:none!important}.correct{border-color:#10b981!important;background:#ecfdf5!important;color:#047857}.wrong-choice{border-color:#ef4444!important;background:#fef2f2!important;color:#b91c1c}.text-choices{display:grid;gap:9px}.text-choice{padding:12px 13px;text-align:left;line-height:1.45;font-weight:800}
-.feedback{min-height:80px;border:1px solid #e5e7eb;background:#f8fafc;border-radius:16px;padding:13px 14px;line-height:1.6}.feedback strong{display:block}.feedback.good strong{color:var(--good)}.feedback.bad strong{color:var(--bad)}.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}.btn{border:0;border-radius:14px;padding:13px 14px;font-weight:900;cursor:pointer;transition:.18s ease}.btn.primary{background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;box-shadow:0 10px 22px rgba(79,70,229,.22)}.btn.secondary{background:#f3f4f6;border:1px solid #e5e7eb;color:#111827}.btn:hover{transform:translateY(-1px)}
-/* 切棱立方体 */.cut-wrap{width:min(560px,100%);text-align:center}.cut-svg{width:min(480px,100%);height:auto;display:block;margin:auto}.legend{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;margin-top:6px;color:var(--muted);font-size:13px}.lg{display:inline-flex;align-items:center;gap:7px}.sw{width:28px;height:0;border-top:4px solid;border-radius:99px}.sw.cut{border-color:var(--cut)}.sw.hinge{border-color:var(--hinge)}
-.net-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;width:100%}.net-option{padding:8px;min-height:180px;display:grid;place-items:center;position:relative}.net-option .letter{position:absolute;left:9px;top:8px;width:26px;height:26px;display:grid;place-items:center;background:#0f172a;color:#fff;border-radius:8px;font-weight:900;font-size:12px}.mini-net{position:relative}.mini-face{position:absolute;display:grid;place-items:center;border:1.5px solid #334155;background:#fff;border-radius:4px;font-weight:900;color:#0f172a}.net-option.correct{box-shadow:0 0 0 2px #10b981 inset}.net-option.wrong-choice{box-shadow:0 0 0 2px #ef4444 inset}
-.level-map{border-top:1px solid #e5e7eb;padding-top:14px}.level-map h3{font-size:14px;margin:0 0 9px}.level-row{display:flex;gap:6px;flex-wrap:wrap}.dot{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;background:#f1f5f9;color:#64748b;font-size:11px;font-weight:850}.dot.done{background:#dcfce7;color:#047857}.dot.now{background:#4f46e5;color:#fff}.dot.lock{opacity:.55}.footer{text-align:center;color:var(--muted);font-size:12px;margin-top:14px}
-.modal{position:fixed;inset:0;background:rgba(15,23,42,.56);display:none;place-items:center;padding:20px;z-index:30}.modal.show{display:grid}.modal-box{width:min(460px,100%);background:#fff;border-radius:24px;padding:25px;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.25)}.modal-box h2{margin:4px 0 8px;font-size:30px}.final{font-size:52px;font-weight:950;color:#4f46e5;letter-spacing:-.05em;margin:10px 0}.small{font-size:13px;color:var(--muted);line-height:1.55}
-@media(max-width:820px){.layout{grid-template-columns:1fr}.main{min-height:560px}.stage{min-height:360px}.badge{display:none}}@media(max-width:500px){.shell{padding:14px 10px 30px}.main,.side{padding:15px}.card{border-radius:20px}.stats{grid-template-columns:repeat(2,1fr)}.net-options{grid-template-columns:1fr 1fr}.net-option{min-height:150px}.question{font-size:21px}}
+:root{--bg:#f4f7fb;--card:rgba(255,255,255,.94);--ink:#111827;--muted:#64748b;--line:#d8e1ed;--brand:#5b4cf0;--brand2:#8b5cf6;--cyan:#0891b2;--good:#059669;--bad:#dc2626;--shadow:0 24px 70px rgba(30,41,59,.12)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;min-height:100vh;font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;color:var(--ink);background:radial-gradient(circle at 12% -8%,#dbeafe 0,transparent 30%),radial-gradient(circle at 100% 0,#ede9fe 0,transparent 32%),linear-gradient(180deg,#f8fafc,#eef2f7);overflow-x:hidden}button{font:inherit}.shell{width:min(1180px,100%);margin:auto;padding:22px 16px 48px}.hero{display:flex;align-items:flex-start;justify-content:space-between;gap:18px}.hero h1{margin:0;font-size:clamp(28px,4.8vw,46px);letter-spacing:-.045em;line-height:1.1}.hero p{margin:9px 0 0;color:var(--muted);line-height:1.65}.badge{flex:none;padding:8px 13px;border-radius:999px;background:#eef2ff;border:1px solid #c7d2fe;color:#4338ca;font-size:13px;font-weight:900}.route{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin:18px 0}.route-step{position:relative;min-width:0;padding:12px 7px;border:1px solid var(--line);border-radius:15px;background:rgba(255,255,255,.72);text-align:center;transition:.35s cubic-bezier(.2,.8,.2,1)}.route-step b{display:grid;place-items:center;width:25px;height:25px;margin:0 auto 6px;border-radius:8px;background:#e8edf5;color:#64748b;font-size:12px}.route-step span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#64748b;font-size:11px;font-weight:800}.route-step.now{transform:translateY(-3px);border-color:#a5b4fc;background:#fff;box-shadow:0 10px 24px rgba(79,70,229,.12)}.route-step.now b{background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff}.route-step.now span{color:#4338ca}.route-step.done b{background:#d1fae5;color:#047857}.layout{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(290px,.7fr);gap:18px}.card{border:1px solid rgba(216,225,237,.95);border-radius:24px;background:var(--card);box-shadow:var(--shadow);backdrop-filter:blur(12px)}.main{min-height:640px;padding:21px;overflow:hidden}.side{padding:20px;display:flex;flex-direction:column;gap:15px}.topline{display:flex;justify-content:space-between;align-items:center;gap:10px}.eyebrow{font-size:12px;font-weight:900;letter-spacing:.09em;text-transform:uppercase;color:#64748b}.level-pill{padding:7px 11px;border-radius:999px;background:#eef2ff;color:#4338ca;font-size:13px;font-weight:900}.question{margin:15px 0 5px;font-size:clamp(20px,3vw,29px);font-weight:950;line-height:1.4;letter-spacing:-.02em}.sub{color:var(--muted);font-size:14px;line-height:1.65}.stage{min-height:430px;display:grid;place-items:center;padding:15px 0 4px;animation:stageIn .55s cubic-bezier(.2,.8,.2,1) both}.visual-card{width:min(650px,100%);display:grid;place-items:center}.cube-wrap{width:min(520px,100%);text-align:center;animation:cubeFloat 5s ease-in-out infinite}.cube-svg{width:min(430px,100%);height:auto;overflow:visible;filter:drop-shadow(0 12px 18px rgba(30,41,59,.08))}.cube-face{stroke:#cbd5e1;stroke-width:1;fill:#f8fafc}.cube-face.top{fill:#f1f5ff}.cube-face.right{fill:#edf7fb}.edge{fill:none;stroke:#172033;stroke-width:3.3;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke;animation:edgeIn .7s ease both}.edge.hidden{stroke:#64748b;stroke-width:2.5;stroke-dasharray:8 7;animation:dashMove 3s linear infinite}.edge.accent{stroke:#4f46e5;stroke-width:5}.plane-fill{fill:#6366f1;fill-opacity:.16;stroke:#4f46e5;stroke-width:2.2}.plane-fill.alt{fill:#06b6d4;fill-opacity:.14;stroke:#0891b2}.slice{fill:#f97316;fill-opacity:.33;stroke:#ea580c;stroke-width:3;stroke-linejoin:round;animation:sliceIn .7s .15s cubic-bezier(.2,.8,.2,1) both}.volume-face{fill:#8b5cf6;fill-opacity:.18;stroke:#7c3aed;stroke-width:2.3}.volume-edge{stroke:#7c3aed;stroke-width:4;fill:none}.vertex-label circle{fill:#fff;stroke:#94a3b8;stroke-width:1.2}.vertex-label text{font-size:13px;font-weight:900;fill:#0f172a;text-anchor:middle;dominant-baseline:central}.dimension{font-size:14px;font-weight:900;fill:#7c3aed}.legend{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;margin-top:2px;color:#64748b;font-size:12px}.legend span{display:inline-flex;align-items:center;gap:7px}.legend i{display:inline-block;width:30px;height:0;border-top:3px solid #172033}.legend i.dashed{border-top-style:dashed;border-color:#64748b}.net-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;width:100%}.net-choice{position:relative;min-height:190px;padding:10px;border:1px solid #d8e1ed;border-radius:18px;background:#fff;cursor:pointer;transition:.25s cubic-bezier(.2,.8,.2,1);overflow:hidden}.net-choice:hover{transform:translateY(-4px);border-color:#818cf8;box-shadow:0 12px 28px rgba(79,70,229,.12)}.net-choice .letter{position:absolute;z-index:3;left:10px;top:10px;display:grid;place-items:center;width:29px;height:29px;border-radius:9px;background:#111827;color:#fff;font-size:12px;font-weight:900}.net-svg{width:100%;height:170px}.net-face{fill:#fff;stroke:#263449;stroke-width:2}.net-num{font-weight:950;font-size:18px;text-anchor:middle;dominant-baseline:central;fill:#172033}.choices{display:grid;gap:9px}.choice{width:100%;border:1px solid #d8e1ed;border-radius:14px;background:#fff;padding:12px 13px;text-align:left;color:#1f2937;font-weight:800;line-height:1.48;cursor:pointer;transition:.22s cubic-bezier(.2,.8,.2,1)}.choice:hover{transform:translateX(4px);border-color:#818cf8;box-shadow:0 8px 20px rgba(79,70,229,.09)}.choice.correct,.net-choice.correct{border-color:#10b981!important;background:#ecfdf5!important;color:#047857;box-shadow:0 0 0 2px rgba(16,185,129,.18) inset;animation:correctPop .45s ease}.choice.wrong,.net-choice.wrong{border-color:#ef4444!important;background:#fff1f2!important;color:#b91c1c;animation:shake .38s ease}.choice:disabled,.net-choice:disabled{cursor:default;transform:none}.feedback{min-height:94px;padding:13px 14px;border:1px solid #e2e8f0;border-radius:16px;background:#f8fafc;color:#475569;line-height:1.58;font-size:14px;transition:.3s ease}.feedback strong{display:block;margin-bottom:2px;color:#172033}.feedback.good{border-color:#a7f3d0;background:#ecfdf5}.feedback.good strong{color:#047857}.feedback.bad{border-color:#fecdd3;background:#fff1f2}.feedback.bad strong{color:#be123c}.stats{display:grid;grid-template-columns:1fr 1fr;gap:9px}.stat{padding:11px 12px;border-radius:14px;background:#f8fafc;border:1px solid #e2e8f0}.stat b{display:block;font-size:22px}.stat span{font-size:11px;color:#64748b}.actions{display:grid;grid-template-columns:1fr 1fr;gap:9px}.btn{border:0;border-radius:14px;padding:13px 12px;font-weight:900;cursor:pointer;transition:.22s ease}.btn.primary{background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;box-shadow:0 10px 24px rgba(91,76,240,.24)}.btn.secondary{background:#f1f5f9;color:#1e293b;border:1px solid #e2e8f0}.btn:hover:not(:disabled){transform:translateY(-2px)}.btn:disabled{opacity:.45;cursor:default}.micro{color:#64748b;font-size:12px;line-height:1.55}.footer{text-align:center;margin-top:15px;color:#94a3b8;font-size:12px}.modal{position:fixed;inset:0;display:none;place-items:center;padding:18px;background:rgba(15,23,42,.58);backdrop-filter:blur(7px);z-index:20}.modal.show{display:grid;animation:fade .3s ease}.modal-box{width:min(470px,100%);padding:28px;border-radius:26px;background:#fff;text-align:center;box-shadow:0 34px 90px rgba(0,0,0,.25);animation:modalIn .45s cubic-bezier(.16,1,.3,1)}.modal-box h2{margin:5px 0 8px;font-size:30px}.final-score{margin:10px 0;font-size:54px;font-weight:950;letter-spacing:-.06em;color:#5b4cf0}.leaving .stage{animation:stageOut .25s ease both}
+@keyframes stageIn{from{opacity:0;transform:translateY(15px) scale(.985)}to{opacity:1;transform:none}}@keyframes stageOut{to{opacity:0;transform:translateY(-10px) scale(.99)}}@keyframes cubeFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}@keyframes edgeIn{from{opacity:0;stroke-dashoffset:40}to{opacity:1;stroke-dashoffset:0}}@keyframes dashMove{to{stroke-dashoffset:-30}}@keyframes sliceIn{from{opacity:0;transform:scale(.8);transform-origin:center}to{opacity:1;transform:scale(1)}}@keyframes correctPop{50%{transform:scale(1.025)}}@keyframes shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}@keyframes fade{from{opacity:0}}@keyframes modalIn{from{opacity:0;transform:translateY(18px) scale(.96)}to{opacity:1;transform:none}}
+@media(max-width:850px){.layout{grid-template-columns:1fr}.main{min-height:570px}.stage{min-height:350px}.route-step span{display:none}.route-step{padding:9px 4px}.route-step b{margin-bottom:0}.cube-wrap{width:min(450px,100%)}}
+@media(max-width:520px){.shell{padding:14px 10px 30px}.hero h1{font-size:29px}.badge{display:none}.main,.side{padding:15px}.card{border-radius:20px}.net-grid{gap:8px}.net-choice{min-height:150px;padding:6px}.net-svg{height:135px}.question{font-size:21px}.cube-svg{max-height:330px}.actions{grid-template-columns:1fr}.stage{min-height:320px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 </style>
 </head>
 <body>
-<main class="shell">
-  <div class="hero">
-    <div><h1>立方体展开图 · 逐级空间挑战</h1><p>从相对面开始，逐步进入顶点关系与“沿指定棱剪开得到哪一个展开图”。</p></div>
-    <div class="badge">15 关 · 难度递增</div>
-  </div>
-
-  <section class="stats">
-    <div class="stat"><b id="levelStat">1</b><span>当前关卡</span></div>
-    <div class="stat"><b id="score">0</b><span>得分</span></div>
-    <div class="stat"><b id="streak">0</b><span>连续答对</span></div>
-    <div class="stat"><b id="best">0</b><span>最高连对</span></div>
-  </section>
-
+<main class="shell" id="app">
+  <header class="hero">
+    <div><h1>高中立体几何 · 六关空间挑战</h1><p>从展开图到体积计算，逐关训练空间想象、位置关系与运算能力。</p></div>
+    <div class="badge">6 个专题关卡</div>
+  </header>
+  <nav class="route" id="route" aria-label="关卡路线"></nav>
   <section class="layout">
     <article class="card main">
-      <div class="topline"><span class="eyebrow" id="modeName">基础 · 相对面</span><span class="level-pill" id="levelPill">第 1 / 15 关</span></div>
+      <div class="topline"><span class="eyebrow" id="eyebrow"></span><span class="level-pill" id="levelPill"></span></div>
       <div class="question" id="question"></div>
-      <div class="sub" id="sub"></div>
+      <div class="sub" id="hint"></div>
       <div class="stage" id="stage"></div>
-      <div class="progress"><i id="progress"></i></div>
     </article>
-
     <aside class="card side">
-      <div><div class="eyebrow">选择答案</div><div id="choices" style="margin-top:10px"></div></div>
-      <div class="feedback" id="feedback"><strong>准备开始</strong>先观察结构，再在脑中完成折叠。</div>
-      <div class="actions"><button class="btn secondary" id="retryBtn">换一道同级题</button><button class="btn primary" id="nextBtn" disabled>下一关</button></div>
-      <div class="level-map"><h3>关卡路线</h3><div class="level-row" id="levelRow"></div></div>
-      <p class="small">第 10 关起进入剪棱题：<b style="color:#ef4444">红色棱剪开</b>，<b style="color:#2563eb">蓝色棱保留</b>作为折痕连接。</p>
+      <div><div class="eyebrow">选择答案</div><div class="choices" id="choices" style="margin-top:10px"></div></div>
+      <div class="feedback" id="feedback"><strong>准备开始</strong>先观察图形，再判断空间关系。</div>
+      <div class="stats"><div class="stat"><b id="score">0</b><span>答对题数</span></div><div class="stat"><b id="streak">0</b><span>连续答对</span></div></div>
+      <div class="actions"><button class="btn secondary" id="retryBtn">换一道同关题</button><button class="btn primary" id="nextBtn" disabled>下一关</button></div>
+      <p class="micro"><b>图示约定：</b>正方体中可见棱画实线，不可见棱画虚线；彩色线面是本题研究对象。</p>
     </aside>
   </section>
-  <div class="footer">纯前端网页 · 可直接部署到 GitHub Pages · 手机/电脑均可使用</div>
+  <div class="footer">纯前端教学游戏 · GitHub Pages · 手机与电脑均可使用</div>
 </main>
-
-<div class="modal" id="modal"><div class="modal-box"><div class="eyebrow">闯关完成</div><h2>空间想象挑战完成</h2><div class="final" id="finalScore">0 / 15</div><p id="finalText"></p><button class="btn primary" id="restartBtn" style="width:100%">重新闯关</button></div></div>
-
+<div class="modal" id="modal"><div class="modal-box"><div class="eyebrow">挑战完成</div><h2>六关空间挑战完成</h2><div class="final-score" id="finalScore">0 / 6</div><p id="finalText" class="sub"></p><button class="btn primary" id="restartBtn" style="width:100%;margin-top:12px">重新挑战</button></div></div>
 <script>
 (()=>{
-const NETS=[
-[[0,0],[0,1],[1,1],[1,2],[2,1],[3,1]],
-[[0,0],[0,1],[1,1],[2,1],[2,2],[3,1]],
-[[0,1],[1,0],[1,1],[1,2],[1,3],[2,1]],
-[[0,0],[0,1],[0,2],[1,1],[2,1],[3,1]],
-[[0,1],[1,0],[1,1],[1,2],[1,3],[2,2]],
-[[0,0],[0,1],[1,1],[1,2],[2,2],[2,3]],
-[[0,0],[0,1],[0,2],[1,2],[1,3],[1,4]],
-[[0,0],[0,1],[1,1],[1,2],[1,3],[2,1]],
-[[0,0],[0,1],[1,1],[1,2],[1,3],[2,2]],
-[[0,0],[0,1],[1,1],[2,1],[3,1],[3,2]],
-[[0,0],[0,1],[1,1],[1,2],[1,3],[2,3]]
+const $=s=>document.querySelector(s);const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const ROUTE=['展开图','正方体截面','四点共面','平行关系','垂直关系','空间体体积'];
+let state={level:0,score:0,streak:0,answered:false,current:null};
+const P3={A:[0,0,0],B:[1,0,0],C:[1,1,0],D:[0,1,0],A1:[0,0,1],B1:[1,0,1],C1:[1,1,1],D1:[0,1,1]};
+const proj=([x,y,z])=>[72+163*x+85*y,250-168*z-55*y];
+const edges=[['A','D',1],['D','C',1],['D','D1',1],['A','B',0],['B','C',0],['A','A1',0],['B','B1',0],['C','C1',0],['A1','B1',0],['B1','C1',0],['C1','D1',0],['D1','A1',0]];
+const labelPos={A:[-13,12],B:[13,12],C:[14,5],D:[-13,3],A1:[-14,-10],B1:[12,-10],C1:[14,-8],D1:[-14,-8]};
+function polygon(names,cls){return `<polygon class="${cls}" points="${names.map(n=>proj(P3[n]).join(',')).join(' ')}"/>`}
+function sortedSection(points){const q=points.map(proj),cx=q.reduce((s,p)=>s+p[0],0)/q.length,cy=q.reduce((s,p)=>s+p[1],0)/q.length;return q.sort((a,b)=>Math.atan2(a[1]-cy,a[0]-cx)-Math.atan2(b[1]-cy,b[0]-cx))}
+function cubeSVG(opts={}){
+ let under='',over='';
+ under+=polygon(['A1','B1','C1','D1'],'cube-face top')+polygon(['B','C','C1','B1'],'cube-face right')+polygon(['A','B','B1','A1'],'cube-face');
+ if(opts.mode==='parallel'){under+=polygon(['A','B','B1','A1'],'plane-fill')+polygon(['D','C','C1','D1'],'plane-fill alt')}
+ if(opts.mode==='perpendicular'){under+=polygon(['A','B','C','D'],'plane-fill alt')+polygon(['A','B','B1','A1'],'plane-fill')}
+ if(opts.section){const pts=sortedSection(opts.section);over+=`<polygon class="slice" points="${pts.map(p=>p.join(',')).join(' ')}"/>`}
+ if(opts.mode==='volume'){under+=polygon(['B','C','D'],'volume-face');over+=`<path class="volume-edge" d="M${proj(P3.A1).join(' ')} L${proj(P3.B).join(' ')} M${proj(P3.A1).join(' ')} L${proj(P3.C).join(' ')} M${proj(P3.A1).join(' ')} L${proj(P3.D).join(' ')}"/>`}
+ const hidden=edges.filter(e=>e[2]).map(([a,b])=>`<line class="edge hidden" x1="${proj(P3[a])[0]}" y1="${proj(P3[a])[1]}" x2="${proj(P3[b])[0]}" y2="${proj(P3[b])[1]}"/>`).join('');
+ const solid=edges.filter(e=>!e[2]).map(([a,b])=>`<line class="edge${opts.mode==='perpendicular'&&a==='A'&&b==='A1'?' accent':''}" x1="${proj(P3[a])[0]}" y1="${proj(P3[a])[1]}" x2="${proj(P3[b])[0]}" y2="${proj(P3[b])[1]}"/>`).join('');
+ const labels=Object.keys(P3).map(n=>{const p=proj(P3[n]),d=labelPos[n];return `<g class="vertex-label"><circle cx="${p[0]+d[0]}" cy="${p[1]+d[1]}" r="11"/><text x="${p[0]+d[0]}" y="${p[1]+d[1]}">${n.replace('1','₁')}</text></g>`}).join('');
+ const dims=opts.mode==='volume'?`<text class="dimension" x="150" y="274">6</text><text class="dimension" x="286" y="232">4</text><text class="dimension" x="48" y="170">3</text>`:'';
+ return `<div class="cube-wrap"><svg class="cube-svg" viewBox="30 0 340 290" role="img" aria-label="正方体示意图，实线表示可见棱，虚线表示不可见棱">${under}${hidden}${over}${solid}${dims}${labels}</svg><div class="legend"><span><i></i>可见棱（实线）</span><span><i class="dashed"></i>不可见棱（虚线）</span></div></div>`
+}
+const validNets=[[[1,0],[0,1],[1,1],[2,1],[1,2],[1,3]],[[0,0],[0,1],[1,1],[2,1],[2,2],[3,1]],[[0,1],[1,0],[1,1],[1,2],[1,3],[2,1]]];
+const invalidNets=[[[0,0],[1,0],[2,0],[0,1],[1,1],[2,1]],[[0,0],[1,0],[2,0],[3,0],[4,0],[5,0]],[[0,0],[1,0],[2,0],[1,1],[2,1],[3,1]],[[0,0],[1,0],[0,1],[1,1],[0,2],[1,2]],[[0,0],[1,0],[2,0],[3,0],[1,1],[2,1]]];
+function netSVG(points,labels){const minX=Math.min(...points.map(p=>p[0])),minY=Math.min(...points.map(p=>p[1]));const pts=points.map(([x,y])=>[x-minX,y-minY]),mx=Math.max(...pts.map(p=>p[0]))+1,my=Math.max(...pts.map(p=>p[1]))+1,s=Math.min(43,185/mx,138/my),ox=(220-mx*s)/2,oy=(165-my*s)/2;return `<svg class="net-svg" viewBox="0 0 220 165" aria-label="带有1至6编号的展开图">${pts.map(([x,y],i)=>`<rect class="net-face" x="${ox+x*s}" y="${oy+y*s}" width="${s}" height="${s}" rx="5"/><text class="net-num" x="${ox+(x+.5)*s}" y="${oy+(y+.5)*s}">${labels[i]}</text>`).join('')}</svg>`}
+const sections=[
+ {name:'三角形',pts:[[.42,0,1],[0,.42,1],[0,0,.58]]},
+ {name:'四边形',pts:[[0,0,.56],[1,0,.56],[1,1,.56],[0,1,.56]]},
+ {name:'五边形',pts:[[0,.9294,1],[.6059,0,1],[0,1,.9813],[1,0,.8399],[1,1,.575]]},
+ {name:'六边形',pts:[[1,.5,0],[1,0,.5],[.5,0,1],[0,.5,1],[0,1,.5],[.5,1,0]]}
 ];
-const $=s=>document.querySelector(s), key=(x,y)=>`${x},${y}`, neg=a=>a.map(v=>-v), eq=(a,b)=>a.every((v,i)=>v===b[i]);
-const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
-const pairKey=(a,b)=>a<b?`${a}-${b}`:`${b}-${a}`;
-const NORMAL_LABEL=new Map([
-['0,0,1',1],['1,0,0',2],['0,-1,0',3],['-1,0,0',4],['0,1,0',5],['0,0,-1',6]
-]);
-const LABEL_NORMAL={1:[0,0,1],2:[1,0,0],3:[0,-1,0],4:[-1,0,0],5:[0,1,0],6:[0,0,-1]};
-const OPP={1:6,6:1,2:4,4:2,3:5,5:3};
-let S={level:1,score:0,streak:0,best:0,answered:false,current:null};
-
-function randomTransform(points){
- const mode=Math.floor(Math.random()*8);let pts=points.map(([x0,y0])=>{let x=x0,y=y0;if(mode>=4)x=-x;for(let i=0;i<mode%4;i++) [x,y]=[-y,x];return[x,y]});
- const minX=Math.min(...pts.map(p=>p[0])),minY=Math.min(...pts.map(p=>p[1]));return pts.map(([x,y])=>[x-minX,y-minY]);
-}
-function cellsFrom(points){return points.map(([x,y],id)=>({x,y,id}))}
-function orientations(cells){
- const at=new Map(cells.map(c=>[key(c.x,c.y),c.id])),byId=new Map(cells.map(c=>[c.id,c]));const o=new Map();o.set(cells[0].id,{u:[1,0,0],v:[0,1,0],n:[0,0,1]});const q=[cells[0].id];
- while(q.length){const id=q.shift(),c=byId.get(id),a=o.get(id);for(const[dx,dy,d]of[[1,0,'R'],[-1,0,'L'],[0,1,'D'],[0,-1,'U']]){const nid=at.get(key(c.x+dx,c.y+dy));if(nid===undefined)continue;let b;if(d==='R')b={u:neg(a.n),v:a.v,n:a.u};if(d==='L')b={u:a.n,v:a.v,n:neg(a.u)};if(d==='D')b={u:a.u,v:neg(a.n),n:a.v};if(d==='U')b={u:a.u,v:a.n,n:neg(a.v)};if(!o.has(nid)){o.set(nid,b);q.push(nid)}}}
- return o;
-}
-function labelsFor(cells){const o=orientations(cells);return cells.map(c=>NORMAL_LABEL.get(o.get(c.id).n.join(',')))}
-function adjacencyPairs(cells,labels){const at=new Map(cells.map(c=>[key(c.x,c.y),c.id]));const set=new Set();for(const c of cells){for(const[dx,dy]of[[1,0],[0,1]]){const id2=at.get(key(c.x+dx,c.y+dy));if(id2!==undefined)set.add(pairKey(labels[c.id],labels[id2]))}}return set}
-function oppositeFromNet(cells,labels,targetLabel){const o=orientations(cells),tid=labels.indexOf(targetLabel),wanted=neg(o.get(tid).n);for(const[id,a]of o)if(eq(a.n,wanted))return labels[id]}
-function drawNet(container,cells,labels,{size=78,targetLabel=null,answerLabel=null,wrongLabel=null,mini=false}={}){
- container.innerHTML='';container.className=mini?'mini-net':'net';const mx=Math.max(...cells.map(c=>c.x)),my=Math.max(...cells.map(c=>c.y));container.style.width=(mx+1)*size+'px';container.style.height=(my+1)*size+'px';
- cells.forEach(c=>{const d=document.createElement('div');d.className=mini?'mini-face':'face';if(!mini&&labels[c.id]===targetLabel)d.classList.add('target');if(!mini&&labels[c.id]===answerLabel)d.classList.add('answer');if(!mini&&labels[c.id]===wrongLabel)d.classList.add('wrong');d.style.width=d.style.height=size+'px';d.style.left=c.x*size+'px';d.style.top=c.y*size+'px';d.style.fontSize=(mini?Math.max(12,size*.34):Math.max(22,size*.42))+'px';d.textContent=labels[c.id];container.appendChild(d)});
-}
-function mainNetSize(cells){const cols=Math.max(...cells.map(c=>c.x))+1;const rows=Math.max(...cells.map(c=>c.y))+1;const maxW=Math.min(innerWidth<520?330:520,520),maxH=360;return Math.floor(Math.min(88,maxW/cols,maxH/rows))}
-function miniNetSize(cells){const cols=Math.max(...cells.map(c=>c.x))+1,rows=Math.max(...cells.map(c=>c.y))+1;const box=innerWidth<500?130:160;return Math.floor(Math.min(34,box/cols,120/rows))}
-
-function randomLabeledNet(){const cells=cellsFrom(randomTransform(NETS[Math.floor(Math.random()*NETS.length)])),labels=shuffle([1,2,3,4,5,6]);return{cells,labels}}
-function canonicalNet(index){const cells=cellsFrom(randomTransform(NETS[index]));return{cells,labels:labelsFor(cells)}}
-function difficulty(level){if(level<=3)return['基础','相对面'];if(level<=6)return['进阶','顶点关系'];if(level<=9)return['提高','整体折叠'];if(level<=12)return['挑战','沿棱剪开'];return['专家','复杂剪棱']}
-function updateMap(){const r=$('#levelRow');r.innerHTML='';for(let i=1;i<=15;i++){const d=document.createElement('div');d.className='dot '+(i<S.level?'done':i===S.level?'now':'lock');d.textContent=i;r.appendChild(d)}}
-function updateHeader(){const[d,m]=difficulty(S.level);$('#modeName').textContent=`${d} · ${m}`;$('#levelPill').textContent=`第 ${S.level} / 15 关`;$('#levelStat').textContent=S.level;$('#progress').style.width=((S.level-1)/15*100)+'%';updateMap()}
-function resetFeedback(){const f=$('#feedback');f.className='feedback';f.innerHTML='<strong>请作答</strong>先在脑中完成折叠，再选择答案。';$('#nextBtn').disabled=true;S.answered=false}
-function optionButton(text,value){const b=document.createElement('button');b.className='text-choice';b.textContent=text;b.dataset.value=value;return b}
-
-function makeOpposite(){
- const n=randomLabeledNet(),target=n.labels[Math.floor(Math.random()*6)],ans=oppositeFromNet(n.cells,n.labels,target);S.current={type:'opposite',...n,target,ans};
- $('#question').innerHTML=`与数字 <b>${target}</b> 所在面相对的面是？`;$('#sub').textContent=S.level===1?'提示：相对面折叠后没有公共棱。':'观察展开图，在脑中沿公共棱逐面折起。';
- const stage=$('#stage'),box=document.createElement('div');stage.innerHTML='';stage.appendChild(box);drawNet(box,n.cells,n.labels,{size:mainNetSize(n.cells),targetLabel:target});
- const ch=$('#choices');ch.className='number-choices';ch.innerHTML='';[1,2,3,4,5,6].filter(x=>x!==target).forEach(x=>{const b=document.createElement('button');b.className='num-choice';b.textContent=x;b.dataset.value=x;b.onclick=()=>gradeSimple(String(x),String(ans),b,()=>drawNet(box,n.cells,n.labels,{size:mainNetSize(n.cells),targetLabel:target,answerLabel:ans,wrongLabel:x===ans?null:x}));ch.appendChild(b)})
-}
-function vertexTriples(){const triples=[];for(const a of[1,6])for(const b of[2,4])for(const c of[3,5])triples.push([a,b,c]);return triples}
-function makeVertex(){
- const n=randomLabeledNet(),good=shuffle(vertexTriples())[0];S.current={type:'vertex',...n,good};$('#question').textContent='下面哪组三个面折叠后可以在同一个顶点相交？';$('#sub').textContent='同一顶点处恰有三个面相交，并且其中不能出现一对相对面。';
- const stage=$('#stage'),box=document.createElement('div');stage.innerHTML='';stage.appendChild(box);drawNet(box,n.cells,n.labels,{size:mainNetSize(n.cells)});
- const goodKey=[...good].sort().join(',');let opts=[good];while(opts.length<4){const t=shuffle([1,2,3,4,5,6]).slice(0,3);const k=[...t].sort().join(',');if(!opts.some(o=>[...o].sort().join(',')===k)&&k!==goodKey)opts.push(t)}opts=shuffle(opts);
- const ch=$('#choices');ch.className='text-choices';ch.innerHTML='';opts.forEach(t=>{const k=[...t].sort().join(','),b=optionButton(`（${t.join('，')}）`,k);b.onclick=()=>gradeSimple(k,goodKey,b);ch.appendChild(b)})
-}
-function makePairs(){
- const n=randomLabeledNet();S.current={type:'pairs',...n};$('#question').textContent='折成立方体后，三组相对面分别是哪三组？';$('#sub').textContent='先找出一组相对面，再用剩余四个面继续配对。';
- const stage=$('#stage'),box=document.createElement('div');stage.innerHTML='';stage.appendChild(box);drawNet(box,n.cells,n.labels,{size:mainNetSize(n.cells)});
- const pairs=[];const used=new Set();for(const x of n.labels){if(used.has(x))continue;const y=oppositeFromNet(n.cells,n.labels,x);used.add(x);used.add(y);pairs.push([Math.min(x,y),Math.max(x,y)])}const good=pairs.sort((a,b)=>a[0]-b[0]).map(p=>p.join('—')).join('，');
- let opts=[good];while(opts.length<4){const nums=shuffle([1,2,3,4,5,6]),ps=[];for(let i=0;i<6;i+=2)ps.push([Math.min(nums[i],nums[i+1]),Math.max(nums[i],nums[i+1])]);const s=ps.sort((a,b)=>a[0]-b[0]).map(p=>p.join('—')).join('，');if(!opts.includes(s))opts.push(s)}opts=shuffle(opts);
- const ch=$('#choices');ch.className='text-choices';ch.innerHTML='';opts.forEach(s=>{const b=optionButton(s,s);b.onclick=()=>gradeSimple(s,good,b);ch.appendChild(b)})
-}
-
-function project([x,y,z]){return[220+62*x-62*z,145+34*x+34*z+70*y]}
-function faceLabelFromAxis(axis,sign){if(axis==='x')return sign>0?2:4;if(axis==='y')return sign>0?5:3;return sign>0?1:6}
-function cubeEdges(){const edges=[];for(const axis of['x','y','z']){const other=['x','y','z'].filter(a=>a!==axis);for(const s1 of[-1,1])for(const s2 of[-1,1]){const a={x:0,y:0,z:0},b={x:0,y:0,z:0};a[axis]=-1;b[axis]=1;a[other[0]]=b[other[0]]=s1;a[other[1]]=b[other[1]]=s2;const f1=faceLabelFromAxis(other[0],s1),f2=faceLabelFromAxis(other[1],s2);edges.push({a:[a.x,a.y,a.z],b:[b.x,b.y,b.z],pair:pairKey(f1,f2)})}}return edges}
-function drawCutCube(container,hinges,hard=false){
- const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 440 320');svg.setAttribute('class','cut-svg');
- // translucent faces make hidden edges readable
- const faces=[{n:1,p:[[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]]},{n:2,p:[[1,-1,1],[1,-1,-1],[1,1,-1],[1,1,1]]},{n:3,p:[[-1,-1,-1],[1,-1,-1],[1,-1,1],[-1,-1,1]]},{n:4,p:[[-1,-1,-1],[-1,-1,1],[-1,1,1],[-1,1,-1]]},{n:5,p:[[-1,1,1],[1,1,1],[1,1,-1],[-1,1,-1]]},{n:6,p:[[1,-1,-1],[-1,-1,-1],[-1,1,-1],[1,1,-1]]}];
- for(const f of faces){const poly=document.createElementNS(svg.namespaceURI,'polygon');poly.setAttribute('points',f.p.map(project).map(p=>p.join(',')).join(' '));poly.setAttribute('fill','#ffffff');poly.setAttribute('fill-opacity',hard?'.08':'.16');poly.setAttribute('stroke','none');svg.appendChild(poly)}
- for(const e of cubeEdges()){const [x1,y1]=project(e.a),[x2,y2]=project(e.b),keep=hinges.has(e.pair);const line=document.createElementNS(svg.namespaceURI,'line');line.setAttribute('x1',x1);line.setAttribute('y1',y1);line.setAttribute('x2',x2);line.setAttribute('y2',y2);line.setAttribute('stroke',keep?(hard?'#64748b':'#2563eb'):'#ef4444');line.setAttribute('stroke-width',keep?(hard?'3.2':'5'):'5.5');line.setAttribute('stroke-linecap','round');line.setAttribute('opacity',keep?(hard?'.72':'1'):'.96');svg.appendChild(line)}
- for(let n=1;n<=6;n++){const c=LABEL_NORMAL[n],p=project(c.map(v=>v*1.08)),g=document.createElementNS(svg.namespaceURI,'g'),circle=document.createElementNS(svg.namespaceURI,'circle'),t=document.createElementNS(svg.namespaceURI,'text');circle.setAttribute('cx',p[0]);circle.setAttribute('cy',p[1]);circle.setAttribute('r','15');circle.setAttribute('fill','#0f172a');circle.setAttribute('opacity','.86');t.setAttribute('x',p[0]);t.setAttribute('y',p[1]+5);t.setAttribute('text-anchor','middle');t.setAttribute('font-size','15');t.setAttribute('font-weight','900');t.setAttribute('fill','#fff');t.textContent=n;g.append(circle,t);svg.appendChild(g)}
- container.innerHTML='';container.appendChild(svg);const lg=document.createElement('div');lg.className='legend';lg.innerHTML=hard?'<span class="lg"><i class="sw cut"></i>红色：剪开</span><span class="lg"><i class="sw hinge" style="border-color:#64748b"></i>灰色：保留</span>':'<span class="lg"><i class="sw cut"></i>红色：剪开</span><span class="lg"><i class="sw hinge"></i>蓝色：不剪，作为折痕</span>';container.appendChild(lg)
-}
-function makeCut(){
- const hard=S.level>=13,optionCount=hard?4:3;let targetIndex=Math.floor(Math.random()*NETS.length),target=canonicalNet(targetIndex),hinges=adjacencyPairs(target.cells,target.labels);S.current={type:'cut',targetIndex,target,hinges};
- $('#question').textContent='沿图中红色棱剪开后，能得到下面哪一个平面展开图？';$('#sub').textContent=hard?'专家关：只强调需要剪开的红色棱，其余灰色棱均保留。请自行判断保留关系。':'红色棱全部剪开；蓝色棱不剪开，它们在展开后仍是相邻正方形的公共边。';
- const stage=$('#stage'),wrap=document.createElement('div');wrap.className='cut-wrap';stage.innerHTML='';stage.appendChild(wrap);drawCutCube(wrap,hinges,hard);
- const sig=set=>[...set].sort().join('|'),targetSig=sig(hinges);const options=[{net:target,value:'correct'}],seen=new Set([targetSig]);let guard=0;while(options.length<optionCount&&guard++<200){const idx=Math.floor(Math.random()*NETS.length),opt=canonicalNet(idx),os=sig(adjacencyPairs(opt.cells,opt.labels));if(seen.has(os))continue;seen.add(os);options.push({net:opt,value:'wrong-'+options.length})}const shuffled=shuffle(options),ch=$('#choices');ch.className='net-options';ch.innerHTML='';const letters='ABCD';shuffled.forEach((item,j)=>{const opt=item.net,b=document.createElement('button');b.className='net-option';b.dataset.value=item.value;const letter=document.createElement('span');letter.className='letter';letter.textContent=letters[j];const nbox=document.createElement('div');b.append(letter,nbox);drawNet(nbox,opt.cells,opt.labels,{size:miniNetSize(opt.cells),mini:true});b.onclick=()=>gradeSimple(item.value,'correct',b);ch.appendChild(b)})
-}
-function gradeSimple(value,answer,button,after){
- if(S.answered)return;S.answered=true;const ok=value===answer;const buttons=[...$('#choices').querySelectorAll('button')];buttons.forEach(b=>{b.disabled=true;if(b.dataset.value===answer)b.classList.add('correct')});if(!ok)button.classList.add('wrong-choice');if(after)after();
- if(ok){S.score++;S.streak++;S.best=Math.max(S.best,S.streak)}else S.streak=0;$('#score').textContent=S.score;$('#streak').textContent=S.streak;$('#best').textContent=S.best;
- const f=$('#feedback');f.className='feedback '+(ok?'good':'bad');if(S.current.type==='cut'){const ansLetter=String.fromCharCode(65+buttons.findIndex(b=>b.dataset.value===answer));f.innerHTML=ok?'<strong>回答正确 ✓</strong>保留下来的 5 条蓝色棱恰好把 6 个面连成这张展开图。':`<strong>正确答案是 ${ansLetter}</strong>判断关键不是图形“长得像不像”，而是检查每一条蓝色棱连接的两个数字，在展开图中是否仍共边。`}else if(S.current.type==='vertex'){f.innerHTML=ok?'<strong>回答正确 ✓</strong>同一顶点的三个面分别来自三组相对面中的各一个。':'<strong>这组不成立</strong>如果三个数字中含有一对相对面，它们不可能在同一顶点相交。'}else if(S.current.type==='pairs'){f.innerHTML=ok?'<strong>回答正确 ✓</strong>三组相对面已经全部配对完成。':'<strong>再检查一次</strong>相对面折叠后法向方向相反，且不会共享公共棱。'}else{f.innerHTML=ok?'<strong>回答正确 ✓</strong>这两个面折起后位于立方体的两侧。':`<strong>正确答案是 ${answer}</strong>可以固定目标面，再把与它相连的面逐个沿公共棱折起。`}
- $('#nextBtn').disabled=false;$('#progress').style.width=(S.level/15*100)+'%'
-}
-function build(){updateHeader();resetFeedback();const lvl=S.level;if(lvl<=3)makeOpposite();else if(lvl<=6)makeVertex();else if(lvl<=9)makePairs();else makeCut()}
-function next(){if(!S.answered)return;if(S.level>=15){finish();return}S.level++;build()}
-function finish(){const m=$('#modal');$('#finalScore').textContent=`${S.score} / 15`;$('#finalText').textContent=S.score>=14?'你已经能稳定处理复杂剪棱与展开图对应关系。':S.score>=11?'空间想象已经比较稳定，建议重点练最后三关的隐藏信息题。':S.score>=8?'基础关系掌握不错，剪棱题还可以继续强化。':'建议先把三组相对面和同顶点关系练熟，再进入剪棱题。';m.classList.add('show')}
-function restart(){S={level:1,score:0,streak:0,best:S.best,answered:false,current:null};$('#score').textContent=0;$('#streak').textContent=0;$('#modal').classList.remove('show');build()}
-$('#nextBtn').onclick=next;$('#retryBtn').onclick=build;$('#restartBtn').onclick=restart;window.addEventListener('resize',()=>{if(!S.answered)build()});build();
+function levelOne(){const good=validNets[Math.floor(Math.random()*validNets.length)],items=shuffle([{points:good,ok:true},...shuffle(invalidNets).slice(0,3).map(points=>({points,ok:false}))]);return{eyebrow:'第一关 · 展开图',question:'下面哪一幅带有 1—6 编号的图形能折成立方体？',hint:'相邻正方形沿公共边折起；折叠后六个面不能重合。',visual:`<div class="net-grid">${items.map((it,i)=>`<button class="net-choice" data-value="${it.ok?'yes':'no-'+i}"><span class="letter">${'ABCD'[i]}</span>${netSVG(it.points,shuffle([1,2,3,4,5,6]))}</button>`).join('')}</div>`,answer:'yes',explanation:'正确展开图折叠后六个面的法向方向各不相同，不会出现两个面重合。',net:true}}
+function levelTwo(){const s=sections[Math.floor(Math.random()*sections.length)];return{eyebrow:'第二关 · 正方体截面',question:'橙色平面截正方体所得截面的形状是？',hint:'截面多边形的顶点都落在正方体的棱上。',visual:cubeSVG({section:s.pts}),choices:['三角形','四边形','五边形','六边形'],answer:s.name,explanation:`橙色截面与正方体的棱共有 ${s.pts.length} 个交点，因此截面是${s.name}。`}}
+function levelThree(){return{eyebrow:'第三关 · 四点共面',question:'在正方体 ABCD—A₁B₁C₁D₁ 中，下列四点共面的是？',hint:'先用三个不共线点确定一个平面，再检查第四点是否在该平面内。',visual:cubeSVG(),choices:['A，B，C，C₁','A，A₁，C，C₁','A，B，D，C₁','A，A₁，B，D'],answer:'A，A₁，C，C₁',explanation:'A、A₁、C、C₁ 位于正方体的对角面 ACC₁A₁ 内，所以四点共面。'}}
+function levelFour(){return{eyebrow:'第四关 · 平行关系',question:'下列“线面平行、面面平行”两项判断均正确的是？',hint:'直线与平面平行要求直线不在平面内；两个平行平面没有公共点。',visual:cubeSVG({mode:'parallel'}),choices:['AB ∥ 平面 A₁B₁C₁D₁；平面 ABB₁A₁ ∥ 平面 CDD₁C₁','AA₁ ∥ 平面 A₁B₁C₁D₁；平面 ABCD ∥ 平面 BCC₁B₁','AC ∥ 平面 ACC₁A₁；平面 ABCD ∥ 平面 A₁B₁C₁D₁','BB₁ ∥ 平面 ADD₁A₁；平面 BCC₁B₁ ∥ 平面 CDD₁C₁'],answer:'AB ∥ 平面 A₁B₁C₁D₁；平面 ABB₁A₁ ∥ 平面 CDD₁C₁',explanation:'AB 与上底面平行；前、后两个侧面是正方体的一组相对面，因此互相平行。'}}
+function levelFive(){return{eyebrow:'第五关 · 垂直关系',question:'下列“线面垂直、面面垂直”两项判断均正确的是？',hint:'线面垂直可由直线垂直平面内两条相交直线判定；相邻两个面互相垂直。',visual:cubeSVG({mode:'perpendicular'}),choices:['AA₁ ⟂ 平面 ABCD；平面 ABB₁A₁ ⟂ 平面 ABCD','AB ⟂ 平面 ABCD；平面 A₁B₁C₁D₁ ⟂ 平面 ABCD','AC₁ ⟂ 平面 ABCD；平面 ACC₁A₁ ⟂ 平面 ABCD','AA₁ ⟂ 平面 BCC₁B₁；平面 ABB₁A₁ ⟂ 平面 CDD₁C₁'],answer:'AA₁ ⟂ 平面 ABCD；平面 ABB₁A₁ ⟂ 平面 ABCD',explanation:'侧棱 AA₁ 垂直于底面 ABCD；前侧面与底面沿 AB 相交，且二面角为直二面角。'}}
+function levelSix(){return{eyebrow:'第六关 · 空间体体积',question:'长方体中 AB=6，BC=4，AA₁=3，求三棱锥 A₁—BCD 的体积。',hint:'以 △BCD 为底面，高就是点 A₁ 到底面 ABCD 的距离。',visual:cubeSVG({mode:'volume'}),choices:['6','12','18','24'],answer:'12',explanation:'S△BCD=½×6×4=12，高为 AA₁=3，所以 V=⅓×12×3=12。'}}
+const makers=[levelOne,levelTwo,levelThree,levelFour,levelFive,levelSix];
+function updateRoute(){const r=$('#route');r.innerHTML='';ROUTE.forEach((name,i)=>{const d=document.createElement('div');d.className='route-step '+(i<state.level?'done':i===state.level?'now':'');d.innerHTML=`<b>${i<state.level?'✓':i+1}</b><span>${name}</span>`;r.appendChild(d)})}
+function resetFeedback(){state.answered=false;$('#feedback').className='feedback';$('#feedback').innerHTML='<strong>请作答</strong>先观察图形，再完成空间判断。';$('#nextBtn').disabled=true}
+function render(){document.querySelector('#app').classList.remove('leaving');updateRoute();resetFeedback();state.current=makers[state.level]();$('#eyebrow').textContent=state.current.eyebrow;$('#levelPill').textContent=`第 ${state.level+1} / 6 关`;$('#question').textContent=state.current.question;$('#hint').textContent=state.current.hint;const stage=$('#stage');stage.innerHTML=`<div class="visual-card">${state.current.visual}</div>`;const choices=$('#choices');choices.innerHTML='';if(state.current.net){choices.innerHTML='<p class="micro" style="margin:0">请直接点击左侧（手机端为上方）的 A、B、C、D 展开图。</p>';stage.querySelectorAll('.net-choice').forEach(b=>b.onclick=()=>grade(b.dataset.value,b))}else{state.current.choices.forEach((c,i)=>{const b=document.createElement('button');b.className='choice';b.dataset.value=c;b.textContent=`${'ABCD'[i]}. ${c}`;b.onclick=()=>grade(c,b);choices.appendChild(b)})}}
+function grade(value,button){if(state.answered)return;state.answered=true;const ok=value===state.current.answer;const buttons=[...document.querySelectorAll('.choice,.net-choice')];buttons.forEach(b=>{b.disabled=true;if(b.dataset.value===state.current.answer)b.classList.add('correct')});if(!ok)button.classList.add('wrong');if(ok){state.score++;state.streak++}else state.streak=0;$('#score').textContent=state.score;$('#streak').textContent=state.streak;const f=$('#feedback');f.className='feedback '+(ok?'good':'bad');f.innerHTML=`<strong>${ok?'回答正确 ✓':'本题回答错误'}</strong>${state.current.explanation}`;$('#nextBtn').disabled=false;$('#nextBtn').textContent=state.level===5?'查看成绩':'下一关'}
+function next(){if(!state.answered)return;if(state.level===5){finish();return}const app=$('#app');app.classList.add('leaving');setTimeout(()=>{state.level++;render()},250)}
+function finish(){const modal=$('#modal');$('#finalScore').textContent=`${state.score} / 6`;$('#finalText').textContent=state.score===6?'六个专题全部掌握，空间想象与位置关系判断很稳定。':state.score>=4?'整体掌握良好，可以针对失分关卡再练一次。':'建议先根据实线、虚线辨认空间结构，再逐关复习判定定理。';modal.classList.add('show')}
+function restart(){state={level:0,score:0,streak:0,answered:false,current:null};$('#score').textContent='0';$('#streak').textContent='0';$('#modal').classList.remove('show');$('#nextBtn').textContent='下一关';render()}
+$('#nextBtn').onclick=next;$('#retryBtn').onclick=render;$('#restartBtn').onclick=restart;render();
 })();
 </script>
 </body>
