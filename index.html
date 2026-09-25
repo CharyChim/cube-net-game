@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0f172a">
+<title>立方体展开图 · 逐级空间挑战</title>
+<style>
+:root{--bg:#f5f7fb;--card:#fff;--ink:#0f172a;--muted:#64748b;--line:#dbe3ef;--brand:#4f46e5;--brand2:#7c3aed;--good:#059669;--bad:#dc2626;--cut:#ef4444;--hinge:#2563eb;--shadow:0 18px 50px rgba(15,23,42,.10)}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;color:var(--ink);background:radial-gradient(circle at 10% 0,#e0e7ff 0,transparent 28%),radial-gradient(circle at 100% 10%,#f3e8ff 0,transparent 30%),var(--bg)}button{font:inherit}
+.shell{width:min(1180px,100%);margin:auto;padding:22px 16px 46px}.hero{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.hero h1{margin:0;font-size:clamp(27px,5vw,44px);letter-spacing:-.045em}.hero p{margin:8px 0 0;color:var(--muted);line-height:1.65}.badge{flex:none;border:1px solid #c7d2fe;background:#eef2ff;color:#3730a3;border-radius:999px;padding:8px 12px;font-weight:800;font-size:13px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:17px 0}.stat{background:rgba(255,255,255,.82);border:1px solid rgba(219,227,239,.95);border-radius:16px;padding:11px 14px;backdrop-filter:blur(8px)}.stat b{display:block;font-size:22px}.stat span{font-size:12px;color:var(--muted)}
+.layout{display:grid;grid-template-columns:1.28fr .72fr;gap:18px}.card{background:rgba(255,255,255,.95);border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow)}.main{padding:20px;min-height:650px}.side{padding:20px;display:flex;flex-direction:column;gap:15px}.topline{display:flex;justify-content:space-between;align-items:center;gap:10px}.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:850}.level-pill{font-size:13px;font-weight:850;color:#4338ca;background:#eef2ff;border-radius:999px;padding:7px 10px}.question{font-size:clamp(20px,3.7vw,30px);font-weight:900;line-height:1.38;margin:14px 0 5px}.sub{color:var(--muted);font-size:14px;line-height:1.6}.stage{min-height:410px;display:grid;place-items:center;padding:16px 0 8px;overflow:auto}.progress{height:9px;background:#e5e7eb;border-radius:999px;overflow:hidden;margin-top:10px}.progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--brand2));transition:.35s ease;border-radius:inherit}
+/* 单个展开图 */.net{position:relative}.face{position:absolute;display:grid;place-items:center;border:2px solid #0f172a;background:linear-gradient(145deg,#fff,#f8fafc);font-weight:950;border-radius:9px;box-shadow:inset 0 0 0 1px #fff;user-select:none}.face:after{content:"";position:absolute;inset:5px;border:1px dashed #cbd5e1;border-radius:5px}.face.target{background:#eef2ff;border-color:#4f46e5;color:#3730a3;transform:scale(1.035);z-index:2}.face.answer{background:#ecfdf5;border-color:#059669;color:#047857}.face.wrong{background:#fef2f2;border-color:#dc2626;color:#b91c1c}
+/* 选择 */.number-choices{display:grid;grid-template-columns:repeat(5,1fr);gap:9px}.num-choice,.text-choice,.net-option{border:1px solid #d7deea;background:#fff;border-radius:14px;cursor:pointer;transition:.18s ease}.num-choice{min-height:52px;font-size:20px;font-weight:950}.num-choice:hover,.text-choice:hover,.net-option:hover{transform:translateY(-2px);border-color:#818cf8;box-shadow:0 8px 18px rgba(79,70,229,.11)}button:disabled{cursor:default!important;transform:none!important}.correct{border-color:#10b981!important;background:#ecfdf5!important;color:#047857}.wrong-choice{border-color:#ef4444!important;background:#fef2f2!important;color:#b91c1c}.text-choices{display:grid;gap:9px}.text-choice{padding:12px 13px;text-align:left;line-height:1.45;font-weight:800}
+.feedback{min-height:80px;border:1px solid #e5e7eb;background:#f8fafc;border-radius:16px;padding:13px 14px;line-height:1.6}.feedback strong{display:block}.feedback.good strong{color:var(--good)}.feedback.bad strong{color:var(--bad)}.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}.btn{border:0;border-radius:14px;padding:13px 14px;font-weight:900;cursor:pointer;transition:.18s ease}.btn.primary{background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;box-shadow:0 10px 22px rgba(79,70,229,.22)}.btn.secondary{background:#f3f4f6;border:1px solid #e5e7eb;color:#111827}.btn:hover{transform:translateY(-1px)}
+/* 切棱立方体 */.cut-wrap{width:min(560px,100%);text-align:center}.cut-svg{width:min(480px,100%);height:auto;display:block;margin:auto}.legend{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;margin-top:6px;color:var(--muted);font-size:13px}.lg{display:inline-flex;align-items:center;gap:7px}.sw{width:28px;height:0;border-top:4px solid;border-radius:99px}.sw.cut{border-color:var(--cut)}.sw.hinge{border-color:var(--hinge)}
+.net-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;width:100%}.net-option{padding:8px;min-height:180px;display:grid;place-items:center;position:relative}.net-option .letter{position:absolute;left:9px;top:8px;width:26px;height:26px;display:grid;place-items:center;background:#0f172a;color:#fff;border-radius:8px;font-weight:900;font-size:12px}.mini-net{position:relative}.mini-face{position:absolute;display:grid;place-items:center;border:1.5px solid #334155;background:#fff;border-radius:4px;font-weight:900;color:#0f172a}.net-option.correct{box-shadow:0 0 0 2px #10b981 inset}.net-option.wrong-choice{box-shadow:0 0 0 2px #ef4444 inset}
+.level-map{border-top:1px solid #e5e7eb;padding-top:14px}.level-map h3{font-size:14px;margin:0 0 9px}.level-row{display:flex;gap:6px;flex-wrap:wrap}.dot{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;background:#f1f5f9;color:#64748b;font-size:11px;font-weight:850}.dot.done{background:#dcfce7;color:#047857}.dot.now{background:#4f46e5;color:#fff}.dot.lock{opacity:.55}.footer{text-align:center;color:var(--muted);font-size:12px;margin-top:14px}
+.modal{position:fixed;inset:0;background:rgba(15,23,42,.56);display:none;place-items:center;padding:20px;z-index:30}.modal.show{display:grid}.modal-box{width:min(460px,100%);background:#fff;border-radius:24px;padding:25px;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.25)}.modal-box h2{margin:4px 0 8px;font-size:30px}.final{font-size:52px;font-weight:950;color:#4f46e5;letter-spacing:-.05em;margin:10px 0}.small{font-size:13px;color:var(--muted);line-height:1.55}
+@media(max-width:820px){.layout{grid-template-columns:1fr}.main{min-height:560px}.stage{min-height:360px}.badge{display:none}}@media(max-width:500px){.shell{padding:14px 10px 30px}.main,.side{padding:15px}.card{border-radius:20px}.stats{grid-template-columns:repeat(2,1fr)}.net-options{grid-template-columns:1fr 1fr}.net-option{min-height:150px}.question{font-size:21px}}
+</style>
+</head>
+<body>
+<main class="shell">
+  <div class="hero">
+    <div><h1>立方体展开图 · 逐级空间挑战</h1><p>从相对面开始，逐步进入顶点关系与“沿指定棱剪开得到哪一个展开图”。</p></div>
+    <div class="badge">15 关 · 难度递增</div>
+  </div>
+
+  <section class="stats">
+    <div class="stat"><b id="levelStat">1</b><span>当前关卡</span></div>
+    <div class="stat"><b id="score">0</b><span>得分</span></div>
+    <div class="stat"><b id="streak">0</b><span>连续答对</span></div>
+    <div class="stat"><b id="best">0</b><span>最高连对</span></div>
+  </section>
+
+  <section class="layout">
+    <article class="card main">
+      <div class="topline"><span class="eyebrow" id="modeName">基础 · 相对面</span><span class="level-pill" id="levelPill">第 1 / 15 关</span></div>
+      <div class="question" id="question"></div>
+      <div class="sub" id="sub"></div>
+      <div class="stage" id="stage"></div>
+      <div class="progress"><i id="progress"></i></div>
+    </article>
+
+    <aside class="card side">
+      <div><div class="eyebrow">选择答案</div><div id="choices" style="margin-top:10px"></div></div>
+      <div class="feedback" id="feedback"><strong>准备开始</strong>先观察结构，再在脑中完成折叠。</div>
+      <div class="actions"><button class="btn secondary" id="retryBtn">换一道同级题</button><button class="btn primary" id="nextBtn" disabled>下一关</button></div>
+      <div class="level-map"><h3>关卡路线</h3><div class="level-row" id="levelRow"></div></div>
+      <p class="small">第 10 关起进入剪棱题：<b style="color:#ef4444">红色棱剪开</b>，<b style="color:#2563eb">蓝色棱保留</b>作为折痕连接。</p>
+    </aside>
+  </section>
+  <div class="footer">纯前端网页 · 可直接部署到 GitHub Pages · 手机/电脑均可使用</div>
+</main>
+
+<div class="modal" id="modal"><div class="modal-box"><div class="eyebrow">闯关完成</div><h2>空间想象挑战完成</h2><div class="final" id="finalScore">0 / 15</div><p id="finalText"></p><button class="btn primary" id="restartBtn" style="width:100%">重新闯关</button></div></div>
+
+<script>
+(()=>{
+const NETS=[
+[[0,0],[0,1],[1,1],[1,2],[2,1],[3,1]],
+[[0,0],[0,1],[1,1],[2,1],[2,2],[3,1]],
+[[0,1],[1,0],[1,1],[1,2],[1,3],[2,1]],
+[[0,0],[0,1],[0,2],[1,1],[2,1],[3,1]],
+[[0,1],[1,0],[1,1],[1,2],[1,3],[2,2]],
+[[0,0],[0,1],[1,1],[1,2],[2,2],[2,3]],
+[[0,0],[0,1],[0,2],[1,2],[1,3],[1,4]],
+[[0,0],[0,1],[1,1],[1,2],[1,3],[2,1]],
+[[0,0],[0,1],[1,1],[1,2],[1,3],[2,2]],
+[[0,0],[0,1],[1,1],[2,1],[3,1],[3,2]],
+[[0,0],[0,1],[1,1],[1,2],[1,3],[2,3]]
+];
+const $=s=>document.querySelector(s), key=(x,y)=>`${x},${y}`, neg=a=>a.map(v=>-v), eq=(a,b)=>a.every((v,i)=>v===b[i]);
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const pairKey=(a,b)=>a<b?`${a}-${b}`:`${b}-${a}`;
+const NORMAL_LABEL=new Map([
+['0,0,1',1],['1,0,0',2],['0,-1,0',3],['-1,0,0',4],['0,1,0',5],['0,0,-1',6]
+]);
+const LABEL_NORMAL={1:[0,0,1],2:[1,0,0],3:[0,-1,0],4:[-1,0,0],5:[0,1,0],6:[0,0,-1]};
+const OPP={1:6,6:1,2:4,4:2,3:5,5:3};
+let S={level:1,score:0,streak:0,best:0,answered:false,current:null};
+
+function randomTransform(points){
+ const mode=Math.floor(Math.random()*8);let pts=points.map(([x0,y0])=>{let x=x0,y=y0;if(mode>=4)x=-x;for(let i=0;i<mode%4;i++) [x,y]=[-y,x];return[x,y]});
+ const minX=Math.min(...pts.map(p=>p[0])),minY=Math.min(...pts.map(p=>p[1]));return pts.map(([x,y])=>[x-minX,y-minY]);
+}
+function cellsFrom(points){return points.map(([x,y],id)=>({x,y,id}))}
+function orientations(cells){
+ const at=new Map(cells.map(c=>[key(c.x,c.y),c.id])),byId=new Map(cells.map(c=>[c.id,c]));const o=new Map();o.set(cells[0].id,{u:[1,0,0],v:[0,1,0],n:[0,0,1]});const q=[cells[0].id];
+ while(q.length){const id=q.shift(),c=byId.get(id),a=o.get(id);for(const[dx,dy,d]of[[1,0,'R'],[-1,0,'L'],[0,1,'D'],[0,-1,'U']]){const nid=at.get(key(c.x+dx,c.y+dy));if(nid===undefined)continue;let b;if(d==='R')b={u:neg(a.n),v:a.v,n:a.u};if(d==='L')b={u:a.n,v:a.v,n:neg(a.u)};if(d==='D')b={u:a.u,v:neg(a.n),n:a.v};if(d==='U')b={u:a.u,v:a.n,n:neg(a.v)};if(!o.has(nid)){o.set(nid,b);q.push(nid)}}}
+ return o;
+}
+function labelsFor(cells){const o=orientations(cells);return cells.map(c=>NORMAL_LABEL.get(o.get(c.id).n.join(',')))}
+function adjacencyPairs(cells,labels){const at=new Map(cells.map(c=>[key(c.x,c.y),c.id]));const set=new Set();for(const c of cells){for(const[dx,dy]of[[1,0],[0,1]]){const id2=at.get(key(c.x+dx,c.y+dy));if(id2!==undefined)set.add(pairKey(labels[c.id],labels[id2]))}}return set}
+function oppositeFromNet(cells,labels,targetLabel){const o=orientations(cells),tid=labels.indexOf(targetLabel),wanted=neg(o.get(tid).n);for(const[id,a]of o)if(eq(a.n,wanted))return labels[id]}
+function drawNet(container,cells,labels,{size=78,targetLabel=null,answerLabel=null,wrongLabel=null,mini=false}={}){
+ container.innerHTML='';container.className=mini?'mini-net':'net';const mx=Math.max(...cells.map(c=>c.x)),my=Math.max(...cells.map(c=>c.y));container.style.width=(mx+1)*size+'px';container.style.height=(my+1)*size+'px';
+ cells.forEach(c=>{const d=document.createElement('div');d.className=mini?'mini-face':'face';if(!mini&&labels[c.id]===targetLabel)d.classList.add('target');if(!mini&&labels[c.id]===answerLabel)d.classList.add('answer');if(!mini&&labels[c.id]===wrongLabel)d.classList.add('wrong');d.style.width=d.style.height=size+'px';d.style.left=c.x*size+'px';d.style.top=c.y*size+'px';d.style.fontSize=(mini?Math.max(12,size*.34):Math.max(22,size*.42))+'px';d.textContent=labels[c.id];container.appendChild(d)});
+}
+function mainNetSize(cells){const cols=Math.max(...cells.map(c=>c.x))+1;const rows=Math.max(...cells.map(c=>c.y))+1;const maxW=Math.min(innerWidth<520?330:520,520),maxH=360;return Math.floor(Math.min(88,maxW/cols,maxH/rows))}
+function miniNetSize(cells){const cols=Math.max(...cells.map(c=>c.x))+1,rows=Math.max(...cells.map(c=>c.y))+1;const box=innerWidth<500?130:160;return Math.floor(Math.min(34,box/cols,120/rows))}
+
+function randomLabeledNet(){const cells=cellsFrom(randomTransform(NETS[Math.floor(Math.random()*NETS.length)])),labels=shuffle([1,2,3,4,5,6]);return{cells,labels}}
+function canonicalNet(index){const cells=cellsFrom(randomTransform(NETS[index]));return{cells,labels:labelsFor(cells)}}
+function difficulty(level){if(level<=3)return['基础','相对面'];if(level<=6)return['进阶','顶点关系'];if(level<=9)return['提高','整体折叠'];if(level<=12)return['挑战','沿棱剪开'];return['专家','复杂剪棱']}
+function updateMap(){const r=$('#levelRow');r.innerHTML='';for(let i=1;i<=15;i++){const d=document.createElement('div');d.className='dot '+(i<S.level?'done':i===S.level?'now':'lock');d.textContent=i;r.appendChild(d)}}
+function updateHeader(){const[d,m]=difficulty(S.level);$('#modeName').textContent=`${d} · ${m}`;$('#levelPill').textContent=`第 ${S.level} / 15 关`;$('#levelStat').textContent=S.level;$('#progress').style.width=((S.level-1)/15*100)+'%';updateMap()}
+function resetFeedback(){const f=$('#feedback');f.className='feedback';f.innerHTML='<strong>请作答</strong>先在脑中完成折叠，再选择答案。';$('#nextBtn').disabled=true;S.answered=false}
+function optionButton(text,value){const b=document.createElement('button');b.className='text-choice';b.textContent=text;b.dataset.value=value;return b}
+
+function makeOpposite(){
+ const n=randomLabeledNet(),target=n.labels[Math.floor(Math.random()*6)],ans=oppositeFromNet(n.cells,n.labels,target);S.current={type:'opposite',...n,target,ans};
+ $('#question').innerHTML=`与数字 <b>${target}</b> 所在面相对的面是？`;$('#sub').textContent=S.level===1?'提示：相对面折叠后没有公共棱。':'观察展开图，在脑中沿公共棱逐面折起。';
+ const stage=$('#stage'),box=document.createElement('div');stage.innerHTML='';stage.appendChild(box);drawNet(box,n.cells,n.labels,{size:mainNetSize(n.cells),targetLabel:target});
+ const ch=$('#choices');ch.className='number-choices';ch.innerHTML='';[1,2,3,4,5,6].filter(x=>x!==target).forEach(x=>{const b=document.createElement('button');b.className='num-choice';b.textContent=x;b.dataset.value=x;b.onclick=()=>gradeSimple(String(x),String(ans),b,()=>drawNet(box,n.cells,n.labels,{size:mainNetSize(n.cells),targetLabel:target,answerLabel:ans,wrongLabel:x===ans?null:x}));ch.appendChild(b)})
+}
+function vertexTriples(){const triples=[];for(const a of[1,6])for(const b of[2,4])for(const c of[3,5])triples.push([a,b,c]);return triples}
+function makeVertex(){
+ const n=randomLabeledNet(),good=shuffle(vertexTriples())[0];S.current={type:'vertex',...n,good};$('#question').textContent='下面哪组三个面折叠后可以在同一个顶点相交？';$('#sub').textContent='同一顶点处恰有三个面相交，并且其中不能出现一对相对面。';
+ const stage=$('#stage'),box=document.createElement('div');stage.innerHTML='';stage.appendChild(box);drawNet(box,n.cells,n.labels,{size:mainNetSize(n.cells)});
+ const goodKey=[...good].sort().join(',');let opts=[good];while(opts.length<4){const t=shuffle([1,2,3,4,5,6]).slice(0,3);const k=[...t].sort().join(',');if(!opts.some(o=>[...o].sort().join(',')===k)&&k!==goodKey)opts.push(t)}opts=shuffle(opts);
+ const ch=$('#choices');ch.className='text-choices';ch.innerHTML='';opts.forEach(t=>{const k=[...t].sort().join(','),b=optionButton(`（${t.join('，')}）`,k);b.onclick=()=>gradeSimple(k,goodKey,b);ch.appendChild(b)})
+}
+function makePairs(){
+ const n=randomLabeledNet();S.current={type:'pairs',...n};$('#question').textContent='折成立方体后，三组相对面分别是哪三组？';$('#sub').textContent='先找出一组相对面，再用剩余四个面继续配对。';
+ const stage=$('#stage'),box=document.createElement('div');stage.innerHTML='';stage.appendChild(box);drawNet(box,n.cells,n.labels,{size:mainNetSize(n.cells)});
+ const pairs=[];const used=new Set();for(const x of n.labels){if(used.has(x))continue;const y=oppositeFromNet(n.cells,n.labels,x);used.add(x);used.add(y);pairs.push([Math.min(x,y),Math.max(x,y)])}const good=pairs.sort((a,b)=>a[0]-b[0]).map(p=>p.join('—')).join('，');
+ let opts=[good];while(opts.length<4){const nums=shuffle([1,2,3,4,5,6]),ps=[];for(let i=0;i<6;i+=2)ps.push([Math.min(nums[i],nums[i+1]),Math.max(nums[i],nums[i+1])]);const s=ps.sort((a,b)=>a[0]-b[0]).map(p=>p.join('—')).join('，');if(!opts.includes(s))opts.push(s)}opts=shuffle(opts);
+ const ch=$('#choices');ch.className='text-choices';ch.innerHTML='';opts.forEach(s=>{const b=optionButton(s,s);b.onclick=()=>gradeSimple(s,good,b);ch.appendChild(b)})
+}
+
+function project([x,y,z]){return[220+62*x-62*z,145+34*x+34*z+70*y]}
+function faceLabelFromAxis(axis,sign){if(axis==='x')return sign>0?2:4;if(axis==='y')return sign>0?5:3;return sign>0?1:6}
+function cubeEdges(){const edges=[];for(const axis of['x','y','z']){const other=['x','y','z'].filter(a=>a!==axis);for(const s1 of[-1,1])for(const s2 of[-1,1]){const a={x:0,y:0,z:0},b={x:0,y:0,z:0};a[axis]=-1;b[axis]=1;a[other[0]]=b[other[0]]=s1;a[other[1]]=b[other[1]]=s2;const f1=faceLabelFromAxis(other[0],s1),f2=faceLabelFromAxis(other[1],s2);edges.push({a:[a.x,a.y,a.z],b:[b.x,b.y,b.z],pair:pairKey(f1,f2)})}}return edges}
+function drawCutCube(container,hinges,hard=false){
+ const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 440 320');svg.setAttribute('class','cut-svg');
+ // translucent faces make hidden edges readable
+ const faces=[{n:1,p:[[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]]},{n:2,p:[[1,-1,1],[1,-1,-1],[1,1,-1],[1,1,1]]},{n:3,p:[[-1,-1,-1],[1,-1,-1],[1,-1,1],[-1,-1,1]]},{n:4,p:[[-1,-1,-1],[-1,-1,1],[-1,1,1],[-1,1,-1]]},{n:5,p:[[-1,1,1],[1,1,1],[1,1,-1],[-1,1,-1]]},{n:6,p:[[1,-1,-1],[-1,-1,-1],[-1,1,-1],[1,1,-1]]}];
+ for(const f of faces){const poly=document.createElementNS(svg.namespaceURI,'polygon');poly.setAttribute('points',f.p.map(project).map(p=>p.join(',')).join(' '));poly.setAttribute('fill','#ffffff');poly.setAttribute('fill-opacity',hard?'.08':'.16');poly.setAttribute('stroke','none');svg.appendChild(poly)}
+ for(const e of cubeEdges()){const [x1,y1]=project(e.a),[x2,y2]=project(e.b),keep=hinges.has(e.pair);const line=document.createElementNS(svg.namespaceURI,'line');line.setAttribute('x1',x1);line.setAttribute('y1',y1);line.setAttribute('x2',x2);line.setAttribute('y2',y2);line.setAttribute('stroke',keep?(hard?'#64748b':'#2563eb'):'#ef4444');line.setAttribute('stroke-width',keep?(hard?'3.2':'5'):'5.5');line.setAttribute('stroke-linecap','round');line.setAttribute('opacity',keep?(hard?'.72':'1'):'.96');svg.appendChild(line)}
+ for(let n=1;n<=6;n++){const c=LABEL_NORMAL[n],p=project(c.map(v=>v*1.08)),g=document.createElementNS(svg.namespaceURI,'g'),circle=document.createElementNS(svg.namespaceURI,'circle'),t=document.createElementNS(svg.namespaceURI,'text');circle.setAttribute('cx',p[0]);circle.setAttribute('cy',p[1]);circle.setAttribute('r','15');circle.setAttribute('fill','#0f172a');circle.setAttribute('opacity','.86');t.setAttribute('x',p[0]);t.setAttribute('y',p[1]+5);t.setAttribute('text-anchor','middle');t.setAttribute('font-size','15');t.setAttribute('font-weight','900');t.setAttribute('fill','#fff');t.textContent=n;g.append(circle,t);svg.appendChild(g)}
+ container.innerHTML='';container.appendChild(svg);const lg=document.createElement('div');lg.className='legend';lg.innerHTML=hard?'<span class="lg"><i class="sw cut"></i>红色：剪开</span><span class="lg"><i class="sw hinge" style="border-color:#64748b"></i>灰色：保留</span>':'<span class="lg"><i class="sw cut"></i>红色：剪开</span><span class="lg"><i class="sw hinge"></i>蓝色：不剪，作为折痕</span>';container.appendChild(lg)
+}
+function makeCut(){
+ const hard=S.level>=13,optionCount=hard?4:3;let targetIndex=Math.floor(Math.random()*NETS.length),target=canonicalNet(targetIndex),hinges=adjacencyPairs(target.cells,target.labels);S.current={type:'cut',targetIndex,target,hinges};
+ $('#question').textContent='沿图中红色棱剪开后，能得到下面哪一个平面展开图？';$('#sub').textContent=hard?'专家关：只强调需要剪开的红色棱，其余灰色棱均保留。请自行判断保留关系。':'红色棱全部剪开；蓝色棱不剪开，它们在展开后仍是相邻正方形的公共边。';
+ const stage=$('#stage'),wrap=document.createElement('div');wrap.className='cut-wrap';stage.innerHTML='';stage.appendChild(wrap);drawCutCube(wrap,hinges,hard);
+ const sig=set=>[...set].sort().join('|'),targetSig=sig(hinges);const options=[{net:target,value:'correct'}],seen=new Set([targetSig]);let guard=0;while(options.length<optionCount&&guard++<200){const idx=Math.floor(Math.random()*NETS.length),opt=canonicalNet(idx),os=sig(adjacencyPairs(opt.cells,opt.labels));if(seen.has(os))continue;seen.add(os);options.push({net:opt,value:'wrong-'+options.length})}const shuffled=shuffle(options),ch=$('#choices');ch.className='net-options';ch.innerHTML='';const letters='ABCD';shuffled.forEach((item,j)=>{const opt=item.net,b=document.createElement('button');b.className='net-option';b.dataset.value=item.value;const letter=document.createElement('span');letter.className='letter';letter.textContent=letters[j];const nbox=document.createElement('div');b.append(letter,nbox);drawNet(nbox,opt.cells,opt.labels,{size:miniNetSize(opt.cells),mini:true});b.onclick=()=>gradeSimple(item.value,'correct',b);ch.appendChild(b)})
+}
+function gradeSimple(value,answer,button,after){
+ if(S.answered)return;S.answered=true;const ok=value===answer;const buttons=[...$('#choices').querySelectorAll('button')];buttons.forEach(b=>{b.disabled=true;if(b.dataset.value===answer)b.classList.add('correct')});if(!ok)button.classList.add('wrong-choice');if(after)after();
+ if(ok){S.score++;S.streak++;S.best=Math.max(S.best,S.streak)}else S.streak=0;$('#score').textContent=S.score;$('#streak').textContent=S.streak;$('#best').textContent=S.best;
+ const f=$('#feedback');f.className='feedback '+(ok?'good':'bad');if(S.current.type==='cut'){const ansLetter=String.fromCharCode(65+buttons.findIndex(b=>b.dataset.value===answer));f.innerHTML=ok?'<strong>回答正确 ✓</strong>保留下来的 5 条蓝色棱恰好把 6 个面连成这张展开图。':`<strong>正确答案是 ${ansLetter}</strong>判断关键不是图形“长得像不像”，而是检查每一条蓝色棱连接的两个数字，在展开图中是否仍共边。`}else if(S.current.type==='vertex'){f.innerHTML=ok?'<strong>回答正确 ✓</strong>同一顶点的三个面分别来自三组相对面中的各一个。':'<strong>这组不成立</strong>如果三个数字中含有一对相对面，它们不可能在同一顶点相交。'}else if(S.current.type==='pairs'){f.innerHTML=ok?'<strong>回答正确 ✓</strong>三组相对面已经全部配对完成。':'<strong>再检查一次</strong>相对面折叠后法向方向相反，且不会共享公共棱。'}else{f.innerHTML=ok?'<strong>回答正确 ✓</strong>这两个面折起后位于立方体的两侧。':`<strong>正确答案是 ${answer}</strong>可以固定目标面，再把与它相连的面逐个沿公共棱折起。`}
+ $('#nextBtn').disabled=false;$('#progress').style.width=(S.level/15*100)+'%'
+}
+function build(){updateHeader();resetFeedback();const lvl=S.level;if(lvl<=3)makeOpposite();else if(lvl<=6)makeVertex();else if(lvl<=9)makePairs();else makeCut()}
+function next(){if(!S.answered)return;if(S.level>=15){finish();return}S.level++;build()}
+function finish(){const m=$('#modal');$('#finalScore').textContent=`${S.score} / 15`;$('#finalText').textContent=S.score>=14?'你已经能稳定处理复杂剪棱与展开图对应关系。':S.score>=11?'空间想象已经比较稳定，建议重点练最后三关的隐藏信息题。':S.score>=8?'基础关系掌握不错，剪棱题还可以继续强化。':'建议先把三组相对面和同顶点关系练熟，再进入剪棱题。';m.classList.add('show')}
+function restart(){S={level:1,score:0,streak:0,best:S.best,answered:false,current:null};$('#score').textContent=0;$('#streak').textContent=0;$('#modal').classList.remove('show');build()}
+$('#nextBtn').onclick=next;$('#retryBtn').onclick=build;$('#restartBtn').onclick=restart;window.addEventListener('resize',()=>{if(!S.answered)build()});build();
+})();
+</script>
+</body>
+</html>
