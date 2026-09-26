@@ -205,10 +205,33 @@ function packingVisual(type, reveal=false) {
       body+=`<text class="visual-title" x="470" y="${y+5}" text-anchor="middle">第 ${i+1} 层：${n} 个</text>`;
     });
     badge=reveal?"1 + 3 + 6 + 10 = 20":"四层四面体球堆";
-  } else {
+  } else if(type==="void") {
     body=`${sphere(212,258,92)}${sphere(388,258,92)}${sphere(300,105,92,true)}${sphere(300,216,22)}
       <path class="motion-path" d="M212 258 L388 258 L300 105 Z"/><text class="cube-label" x="300" y="221" text-anchor="middle">r</text>`;
     badge=reveal?"r = (√6/2 − 1)R":"四个半径 R 的球两两相切";
+  } else if(type==="box40") {
+    for(let layer=1;layer>=0;layer--) for(let row=4;row>=0;row--) for(let col=0;col<4;col++) body+=sphere(112+col*64+row*16+layer*13,326-row*29-layer*104,17,layer===1);
+    body+=`<path class="cube-line" d="M78 350 L334 350 L462 225 L462 78 L206 78 L78 203 Z M334 350 L462 225 M78 203 L334 203 L462 78 M334 203 L334 350 M206 78 L206 225" opacity=".4"/>`;
+    badge=reveal?"4 × 5 × 2 = 40":"箱体：8r × 10r × 4r";
+  } else if(type==="pairs46") {
+    for(let layer=1;layer>=0;layer--) for(let row=2;row>=0;row--) for(let col=0;col<4;col++) body+=sphere(150+col*66+row*24+layer*17,315-row*38-layer*91,22,layer===1);
+    body+=`<path class="accent-line" d="M150 315 L348 315 M150 315 L198 239 M150 315 L184 133" opacity="${reveal?1:.22}"/>`;
+    badge=reveal?"18 + 16 + 12 = 46 对":"4 × 3 × 2 简单立方堆积";
+  } else if(type==="triangle36") {
+    for(let row=0;row<8;row++) for(let col=0;col<=row;col++) body+=sphere(300-row*19+col*38,55+row*43,15);
+    badge=reveal?"T₈ = 8 × 9 ÷ 2 = 36":"三角形密堆层：每边 8 个";
+  } else if(type==="tetra35") {
+    const counts=[1,3,6,10,15];
+    counts.forEach((n,i)=>{
+      const y=58+i*69;
+      for(let j=0;j<n;j++) body+=sphere(75+j*(Math.min(285/(Math.max(1,n-1)),31)),y,14,i<4);
+      body+=`<text class="visual-title" x="475" y="${y+4}" text-anchor="middle">第 ${i+1} 层：${n} 个</text>`;
+    });
+    badge=reveal?"1 + 3 + 6 + 10 + 15 = 35":"五层四面体球堆";
+  } else {
+    body=`${sphere(245,165,58,true)}${sphere(300,70,58,true)}${sphere(130,230,58)}${sphere(470,230,58)}${sphere(300,350,58)}${sphere(355,295,58)}${sphere(300,220,18)}
+      <path class="motion-path" d="M300 70 L130 230 L300 350 L470 230 Z M130 230 L470 230"/><text class="cube-label" x="300" y="225" text-anchor="middle">r</text>`;
+    badge=reveal?"r = (√2 − 1)R":"六个大球围成正八面体空隙";
   }
   return `<svg viewBox="0 0 600 420" role="img" aria-label="空间球体密堆示意图">${svgDefs()}${body}
     <rect class="formula-badge" x="145" y="370" width="310" height="34" rx="9"/><text class="formula-text" x="300" y="392" text-anchor="middle">${badge}</text>
@@ -223,12 +246,13 @@ function miniCube(projector=iso) {
 function locusVisual(type,reveal=false) {
   let content="";
   const coords=Object.fromEntries(Object.entries(cubeVertices).map(([k,v])=>[k,iso(v)]));
-  if(type==="segment"){
-    const a=coords.A,b=coords.B,a1=coords.A1,m0=[(a[0]+a1[0])/2,(a[1]+a1[1])/2],m1=[(b[0]+a1[0])/2,(b[1]+a1[1])/2];
+  if(type==="segment" || type==="segment23"){
+    const a=coords.A,b=coords.B,a1=coords.A1, ratio=type==="segment23"?2/3:.5;
+    const m0=[a1[0]+ratio*(a[0]-a1[0]),a1[1]+ratio*(a[1]-a1[1])],m1=[a1[0]+ratio*(b[0]-a1[0]),a1[1]+ratio*(b[1]-a1[1])];
     content=`${cubeBase({labels:true})}<path class="motion-path" d="M${a.join(" ")} L${b.join(" ")}"/>
       <circle class="motion-point" r="7"><animateMotion dur="3.4s" repeatCount="indefinite" values="${a.join(",")};${b.join(",")};${a.join(",")}"/></circle>
       <circle fill="#64f5b5" r="6"><animateMotion dur="3.4s" repeatCount="indefinite" values="${m0.join(",")};${m1.join(",")};${m0.join(",")}"/></circle>
-      ${reveal?`<path class="locus-shape" d="M${m0.join(" ")} L${m1.join(" ")}"/><text class="cube-label" x="${m1[0]+12}" y="${m1[1]-8}">M 的轨迹</text>`:""}`;
+      ${reveal?`<path class="locus-shape" d="M${m0.join(" ")} L${m1.join(" ")}"/><text class="cube-label" x="${m1[0]+12}" y="${m1[1]-8}">${type==="segment23"?"长度 2AB/3":"M 的轨迹"}</text>`:""}`;
   } else if(type==="boundary" || type==="region"){
     const bottom=[cubeVertices.A,cubeVertices.B,cubeVertices.C,cubeVertices.D];
     const mapped=bottom.map(p=>vec.scale(vec.add(cubeVertices.A1,p),.5));
@@ -237,12 +261,31 @@ function locusVisual(type,reveal=false) {
     content=`${cubeBase({labels:true})}<polyline class="motion-path" points="${path}"/>
       <circle class="motion-point" r="7"><animateMotion dur="7s" repeatCount="indefinite" path="M${path.replaceAll(" "," L")}"/></circle>
       ${reveal?`<polygon class="locus-shape" points="${pointString(mapped)}" fill-opacity="${type==="boundary"?0:.24}"/><text class="cube-label" x="355" y="205">${type==="boundary"?"正方形边界":"正方形区域"}</text>`:""}`;
-  } else if(type==="sphere"){
+  } else if(type==="circle"){
+    content=`<ellipse cx="215" cy="218" rx="118" ry="68" fill="rgba(80,230,255,.06)" stroke="#78cbe4" stroke-width="2.3"/>
+      <path class="axis-line" d="M97 218 H333 M215 150 V286"/><text class="cube-label" x="203" y="212">O</text>
+      <circle class="motion-point" r="7"><animateMotion dur="4.6s" repeatCount="indefinite" path="M97 218 A118 68 0 1 1 333 218 A118 68 0 1 1 97 218"/></circle>
+      <circle class="cube-point" cx="520" cy="218" r="7"/><text class="cube-label" x="530" y="210">Q</text>
+      ${reveal?`<ellipse class="locus-shape" cx="367.5" cy="218" rx="59" ry="34"/><text class="visual-sub" x="368" y="277" text-anchor="middle">圆 · 半径 R/2</text>`:""}`;
+  } else if(type==="ball"){
+    content=`<circle cx="215" cy="215" r="126" fill="rgba(80,230,255,.1)" stroke="#78cbe4" stroke-width="2"/>
+      <ellipse cx="215" cy="215" rx="126" ry="43" fill="none" stroke="#6b93a8" stroke-dasharray="6 7"/><text class="cube-label" x="203" y="210">O</text>
+      <circle class="motion-point" cx="170" cy="175" r="7"><animate attributeName="cx" values="150;265;180;150" dur="4.8s" repeatCount="indefinite"/><animate attributeName="cy" values="175;245;135;175" dur="4.8s" repeatCount="indefinite"/></circle>
+      <circle class="cube-point" cx="520" cy="215" r="7"/><text class="cube-label" x="530" y="207">Q</text>
+      ${reveal?`<circle class="locus-shape locus-solid" cx="367.5" cy="215" r="63"/><ellipse cx="367.5" cy="215" rx="63" ry="22" fill="none" stroke="#64f5b5" stroke-dasharray="5 6"/><text class="visual-sub" x="368" y="298" text-anchor="middle">实心球 · 半径 R/2</text>`:""}`;
+  } else if(type==="plane"){
+    const planePath="110,300 330,252 410,126 190,174";
+    content=`<polygon points="${planePath}" fill="rgba(80,230,255,.08)" stroke="#78cbe4" stroke-width="2"/>
+      <text class="cube-label" x="120" y="320">α</text><circle class="cube-point" cx="520" cy="75" r="7"/><text class="cube-label" x="532" y="70">Q</text>
+      <circle class="motion-point" r="7"><animateMotion dur="5s" repeatCount="indefinite" path="M135 270 L305 230 L370 155 L210 195 Z"/></circle>
+      ${reveal?`<polygon class="locus-shape" points="315,187.5 425,163.5 465,100.5 355,124.5"/><text class="visual-sub" x="414" y="205" text-anchor="middle">与 α 平行的中位平面</text>`:""}`;
+  } else if(type==="sphere" || type==="sphereThird"){
+    const ratio=type==="sphereThird"?1/3:.5, locusCenter=520+(255-520)*ratio, locusRadius=130*ratio;
     content=`<g transform="translate(20 0)"><ellipse cx="235" cy="210" rx="130" ry="130" fill="rgba(80,230,255,.07)" stroke="#78cbe4" stroke-width="2"/>
       <ellipse cx="235" cy="210" rx="130" ry="46" fill="none" stroke="#6b93a8" stroke-dasharray="6 7"/><line class="axis-line" x1="235" y1="210" x2="365" y2="210"/><text class="cube-label" x="225" y="205">O</text><text class="visual-sub" x="302" y="199">R</text>
       <circle class="motion-point" cx="320" cy="112" r="7"><animate attributeName="cy" values="112;306;112" dur="4s" repeatCount="indefinite"/></circle></g>
       <circle class="cube-point" cx="520" cy="210" r="7"/><text class="cube-label" x="530" y="203">Q</text>
-      ${reveal?`<g><ellipse class="locus-shape" cx="377" cy="210" rx="65" ry="65"/><ellipse cx="377" cy="210" rx="65" ry="23" fill="none" stroke="#64f5b5" stroke-dasharray="5 6"/><text class="cube-label" x="357" y="205">O′</text><text class="visual-sub" x="395" y="270">半径 R/2</text></g>`:""}`;
+      ${reveal?`<g><ellipse class="locus-shape" cx="${locusCenter}" cy="210" rx="${locusRadius}" ry="${locusRadius}"/><ellipse cx="${locusCenter}" cy="210" rx="${locusRadius}" ry="${locusRadius*.35}" fill="none" stroke="#64f5b5" stroke-dasharray="5 6"/><text class="cube-label" x="${locusCenter-20}" y="205">O′</text><text class="visual-sub" x="${locusCenter}" y="${225+locusRadius}" text-anchor="middle">半径 ${type==="sphereThird"?"R/3":"R/2"}</text></g>`:""}`;
   } else {
     const smallProject=([x,y,z])=>iso([.5+.5*x,.5+.5*y,.5*z]);
     content=`${cubeBase({labels:true})}<circle class="motion-point" r="7"><animateMotion dur="7s" repeatCount="indefinite" path="M150 315 L430 315 L500 255 L500 55 L220 55 L150 115 L150 315"/></circle>
@@ -256,7 +299,12 @@ const sectionConfigs = [
   { name:"正方形", points:[[0,0,.5],[1,0,.5],[1,1,.5]], section:[[0,0,.5],[1,0,.5],[1,1,.5],[0,1,.5]] },
   { name:"矩形", points:[[0,0,1],[1,0,0],[0,1,1]], section:[[0,0,1],[1,0,0],[1,1,0],[0,1,1]] },
   { name:"五边形", points:[[0,0,.75],[0,1,.25],[.5,1,0]], section:[[0,0,.75],[0,1,.25],[.5,1,0],[1,.5,0],[1,0,.25]] },
-  { name:"六边形", points:[[1,.5,0],[1,0,.5],[.5,0,1]], section:[[1,.5,0],[1,0,.5],[.5,0,1],[0,.5,1],[0,1,.5],[.5,1,0]] }
+  { name:"六边形", points:[[1,.5,0],[1,0,.5],[.5,0,1]], section:[[1,.5,0],[1,0,.5],[.5,0,1],[0,.5,1],[0,1,.5],[.5,1,0]] },
+  { name:"三角形", points:[[1,1,.4],[1,.4,1],[.4,1,1]], section:[[1,1,.4],[1,.4,1],[.4,1,1]] },
+  { name:"正方形", points:[[.35,0,0],[.35,1,0],[.35,1,1]], section:[[.35,0,0],[.35,1,0],[.35,1,1],[.35,0,1]] },
+  { name:"矩形", points:[[0,0,0],[0,1,0],[1,1,1]], section:[[0,0,0],[0,1,0],[1,1,1],[1,0,1]] },
+  { name:"五边形", points:[[1,1,.25],[1,0,.75],[.5,0,1]], section:[[1,1,.25],[1,0,.75],[.5,0,1],[0,.5,1],[0,1,.75]] },
+  { name:"六边形", points:[[1,.2,0],[1,0,.2],[.2,0,1]], section:[[1,.2,0],[1,0,.2],[.2,0,1],[0,.2,1],[0,1,.2],[.2,1,0]] }
 ];
 
 const validA=[[1,0],[0,1],[1,1],[2,1],[1,2],[1,3]];
@@ -276,7 +324,12 @@ const levels = [
       { prompt:"四个候选图中，哪一个不是立方体展开图？", hint:"这次找反例：如果折起后两个方格占据同一个面，它就不成立。", answer:"D", explanation:"D 的两排错位结构折起后会发生面重合。A、B、C 都属于立方体的 11 种基本展开图。", diagrams:[{cells:validA},{cells:validB},{cells:validC},{cells:invalidZig}] },
       { prompt:"按图折成立方体后，与 1 号面相对的是哪一面？", hint:"沿 1—3—5 这条连续带折叠，观察法向方向。", answer:"5", choices:["2","4","5","6"], explanation:"1 与 5 折叠后法向相反，因此互为对面；另外两组对面是 2 与 4、3 与 6。", visual:()=>numberedNetVisual(0) },
       { prompt:"下列哪组三个面可以在同一个顶点相遇？", hint:"同一顶点不能同时包含一对相对面。", answer:"1、2、3", choices:["1、2、3","1、3、5","2、4、6","2、3、6"], explanation:"三面共点时，必须从三组相对面（1,5）、（2,4）、（3,6）中各取一个。只有 1、2、3 符合。", visual:()=>numberedNetVisual() },
-      { prompt:"折叠后若 3 号面朝上、1 号面朝前，右侧面是几号？", hint:"先固定上面与前面，立方体的左右方向也随之唯一确定。", answer:"4", choices:["2","4","5","6"], explanation:"由展开图的相邻次序可知：3 为上、1 为前时，4 恰好转到右侧；2 则位于左侧。", visual:()=>faceOrientationVisual() }
+      { prompt:"折叠后若 3 号面朝上、1 号面朝前，右侧面是几号？", hint:"先固定上面与前面，立方体的左右方向也随之唯一确定。", answer:"4", choices:["2","4","5","6"], explanation:"由展开图的相邻次序可知：3 为上、1 为前时，4 恰好转到右侧；2 则位于左侧。", visual:()=>faceOrientationVisual() },
+      { prompt:"按图折叠后，与 2 号面相对的是哪一面？", hint:"相对面的法向方向相反，且在立方体上没有公共棱。", answer:"4", choices:["1","3","4","6"], explanation:"由折叠关系可得三组相对面分别是（1,5）、（2,4）、（3,6），所以 2 的对面是 4。", visual:()=>numberedNetVisual(1) },
+      { prompt:"下列哪一对面在折成立方体后仍然共用一条棱？", hint:"每个面只与自己的对面不相邻，其余四个面都与它共棱。", answer:"1 与 6", choices:["1 与 5","2 与 4","3 与 6","1 与 6"], explanation:"1 的对面是 5，而 6 不是 1 的对面，因此 1 与 6 必然相邻并共用一条棱。", visual:()=>numberedNetVisual() },
+      { prompt:"下列哪组三个面不可能在立方体的同一个顶点相遇？", hint:"检查每一组中是否同时出现了一对相对面。", answer:"2、4、5", choices:["1、2、6","1、4、6","2、5、6","2、4、5"], explanation:"2 与 4 是一对相对面，不可能同时经过同一个顶点，所以 2、4、5 不可能共点。", visual:()=>numberedNetVisual() },
+      { prompt:"若 6 号面朝下、5 号面朝前，则右侧面是几号？", hint:"从“3 上、1 前、4 右”的标准朝向绕竖直轴旋转半周。", answer:"2", choices:["1","2","3","4"], explanation:"6 朝下时 3 仍朝上；把前面从 1 转到其对面 5，相当于绕竖直轴转 180°，原左面 2 转到右侧。", visual:()=>numberedNetVisual() },
+      { prompt:"一个立方体共有多少对“共用一条棱”的面？", hint:"六个面各与四个面相邻，但每一对会被重复计算一次。", answer:"12", choices:["8","10","12","15"], explanation:"按面计数得到 6×4=24 次，每对相邻面被计算两次，所以共有 24÷2=12 对。", visual:()=>`<svg viewBox="0 0 600 420" role="img" aria-label="立方体相邻面计数">${svgDefs()}${cubeBase({labels:true})}<text class="visual-title" x="300" y="385" text-anchor="middle">6 × 4 ÷ 2 = ?</text></svg>` }
     ]
   },
   {
@@ -291,7 +344,12 @@ const levels = [
         "三点位于同一水平高度，截平面平行于上、下底面，截得与底面全等的正方形。",
         "截平面同时穿过两组互相平行的棱，四个交点组成矩形；在这里并非正方形。",
         "该平面共穿过五条棱，按所在表面的邻接顺序连接，得到五边形。",
-        "平面 x+y+z=3/2 穿过六条棱，六个交点组成六边形；这是正方体的典型截面。"
+        "平面 x+y+z=3/2 穿过六条棱，六个交点组成六边形；这是正方体的典型截面。",
+        "三个点分别位于同一顶点附近的三条棱上，截平面只穿过这三条棱，所以仍是三角形。",
+        "三个点的 x 坐标都为 0.35，截平面平行于正方体的一个侧面，截面是正方形。",
+        "平面 x=z 穿过四条棱，所得四边形的两组对边分别平行且邻边垂直，因此是矩形。",
+        "它与前一组五边形关于正方体中心对称，同样穿过五条棱，因此截面仍为五边形。",
+        "平面 x+y+z=1.2 与三组相对面都相交，共穿过六条棱，截面为六边形。"
       ][i],
       visual:reveal=>sectionVisual(config,reveal)
     }))
@@ -303,7 +361,12 @@ const levels = [
       {prompt:"正方体沿一个侧面的面对角线方向作正投影，轮廓是什么？",hint:"该方向可写成 (1,1,0)，竖直棱仍保持原长。",answer:"长方形",choices:["正方形","长方形","正六边形","菱形"],explanation:"沿 (1,1,0) 投影时，水平方向宽为 √2，竖直方向高为 1，轮廓是长方形。",visual:r=>projectionVisual({direction:[1,1,0],label:"(1, 1, 0)",shape:"长方形"},r)},
       {prompt:"正方体沿一条体对角线方向作正投影，轮廓是什么？",hint:"方向 (1,1,1) 对三个坐标轴完全对称。",answer:"正六边形",choices:["正三角形","正方形","正六边形","一般六边形"],explanation:"沿体对角线观察，三组棱的投影地位对称，轮廓为正六边形。",visual:r=>projectionVisual({direction:[1,1,1],label:"(1, 1, 1)",shape:"正六边形"},r)},
       {prompt:"沿方向 (2,1,1) 作正投影，正方体的轮廓最准确的描述是？",hint:"三个方向分量都非零，所以通常能看到三组棱；但三个分量不相等。",answer:"一般六边形",choices:["正方形","长方形","正六边形","一般六边形"],explanation:"三个分量都非零，轮廓有六条边；方向对三个轴不对称，所以不是正六边形，而是一般六边形。",visual:r=>projectionVisual({direction:[2,1,1],label:"(2, 1, 1)",shape:"一般六边形"},r)},
-      {prompt:"棱长为 1 的正方体沿方向 (1,2,2) 正投影，投影面积是多少？",hint:"长方体投影面积公式：S=|l|yz+|m|xz+|n|xy，其中 (l,m,n) 是单位方向向量。",answer:"5/3",choices:["1","√2","5/3","√5"],explanation:"单位方向为 (1,2,2)/3。三个面的面积均为 1，所以投影面积 S=(1+2+2)/3=5/3。",visual:r=>projectionVisual({direction:[1,2,2],label:"(1, 2, 2)",shape:r?"面积 5/3":""},r)}
+      {prompt:"棱长为 1 的正方体沿方向 (1,2,2) 正投影，投影面积是多少？",hint:"长方体投影面积公式：S=|l|yz+|m|xz+|n|xy，其中 (l,m,n) 是单位方向向量。",answer:"5/3",choices:["1","√2","5/3","√5"],explanation:"单位方向为 (1,2,2)/3。三个面的面积均为 1，所以投影面积 S=(1+2+2)/3=5/3。",visual:r=>projectionVisual({direction:[1,2,2],label:"(1, 2, 2)",shape:r?"面积 5/3":""},r)},
+      {prompt:"沿方向 (1,0,1) 作正投影，正方体的轮廓是什么？",hint:"这一方向平行于一个侧面的对角线，另一组棱保持为投影的一组边。",answer:"长方形",choices:["正方形","长方形","正六边形","一般六边形"],explanation:"方向中有一个分量为 0，两组棱的投影合并，外轮廓只有四条边；边长之比为 √2:1，所以是长方形。",visual:r=>projectionVisual({direction:[1,0,1],label:"(1, 0, 1)",shape:"长方形"},r)},
+      {prompt:"沿空间对角线方向 (1,−1,1) 作正投影，轮廓是什么？",hint:"符号只改变观察方向；三个分量的绝对值仍然相等。",answer:"正六边形",choices:["正三角形","正方形","正六边形","一般六边形"],explanation:"正方体关于坐标面对称。方向三个分量绝对值相等，三组棱的投影仍完全对称，轮廓为正六边形。",visual:r=>projectionVisual({direction:[1,-1,1],label:"(1, −1, 1)",shape:"正六边形"},r)},
+      {prompt:"沿方向 (3,2,1) 作正投影，外轮廓有几条边？",hint:"三个方向分量均不为 0，三组棱在投影面上给出三个不同方向。",answer:"6 条",choices:["3 条","4 条","6 条","8 条"],explanation:"三个分量均非零且投影后的三组棱互不平行合并，凸包由三对平行边组成，共 6 条边。",visual:r=>projectionVisual({direction:[3,2,1],label:"(3, 2, 1)",shape:"一般六边形 · 6 条边"},r)},
+      {prompt:"棱长为 1 的正方体沿方向 (1,1,0) 正投影，投影面积是多少？",hint:"先把方向单位化为 (1,1,0)/√2，再使用三个坐标面的投影面积之和。",answer:"√2",choices:["1","√2","3/2","√3"],explanation:"单位方向分量为 (1/√2,1/√2,0)，所以 S=1/√2+1/√2=√2。",visual:r=>projectionVisual({direction:[1,1,0],label:"(1, 1, 0)",shape:r?"面积 √2":""},r)},
+      {prompt:"棱长为 1 的正方体在所有方向的正投影中，最大面积是多少？",hint:"若单位方向分量为 l、m、n，则面积为 |l|+|m|+|n|，再用柯西不等式。",answer:"√3",choices:["1","√2","√3","2"],explanation:"由 (|l|+|m|+|n|)²≤3(l²+m²+n²)=3，最大值为 √3；当 |l|=|m|=|n|，即沿体对角线方向时取到。",visual:r=>projectionVisual({direction:[1,1,1],label:"最优方向 (1, 1, 1)",shape:r?"最大面积 √3":""},r)}
     ]
   },
   {
@@ -313,7 +376,12 @@ const levels = [
       {prompt:"3×3×3 的简单立方球堆中，共有多少对彼此相切的球？",hint:"分别统计沿长、宽、高三个方向的相切对数。",answer:"54",choices:["36","45","54","81"],explanation:"每个方向有 (3−1)×3×3=18 对，三个方向共 3×18=54 对。",visual:r=>packingVisual("pairs54",r)},
       {prompt:"平面上把相同圆作三角形密堆，每边排 5 个，这一层共有多少个球？",hint:"从顶行到底行依次为 1、2、3、4、5 个。",answer:"15",choices:["10","15","20","25"],explanation:"总数是三角形数 T₅=1+2+3+4+5=15。",visual:r=>packingVisual("triangle15",r)},
       {prompt:"用相同球堆成 4 层正四面体：各层为边长 1、2、3、4 的三角形层，共有多少球？",hint:"每层先用三角形数计数，再把四层相加。",answer:"20",choices:["16","20","24","30"],explanation:"四层球数依次为 1、3、6、10，总数 1+3+6+10=20，这是第 4 个四面体数。",visual:r=>packingVisual("tetra20",r)},
-      {prompt:"四个半径为 R 的球两两相切，它们围成的四面体空隙中心放一个相切小球，小球半径 r 为？",hint:"四个大球球心构成棱长 2R 的正四面体；其中心到顶点的距离是 √6R/2。",answer:"(√6−2)R/2",choices:["(√2−1)R","(√3−1)R/2","(√6−2)R/2","R/3"],explanation:"正四面体中心到顶点的距离为 √6R/2，又等于 R+r，所以 r=(√6/2−1)R=(√6−2)R/2。",visual:r=>packingVisual("void",r)}
+      {prompt:"四个半径为 R 的球两两相切，它们围成的四面体空隙中心放一个相切小球，小球半径 r 为？",hint:"四个大球球心构成棱长 2R 的正四面体；其中心到顶点的距离是 √6R/2。",answer:"(√6−2)R/2",choices:["(√2−1)R","(√3−1)R/2","(√6−2)R/2","R/3"],explanation:"正四面体中心到顶点的距离为 √6R/2，又等于 R+r，所以 r=(√6/2−1)R=(√6−2)R/2。",visual:r=>packingVisual("void",r)},
+      {prompt:"半径为 r 的球作简单立方堆积，装入 8r×10r×4r 的长方体，共能放几个？",hint:"分别用三个边长除以球的直径 2r。",answer:"40",choices:["32","36","40","48"],explanation:"三个方向依次放 4、5、2 个球，因此总数为 4×5×2=40。",visual:r=>packingVisual("box40",r)},
+      {prompt:"4×3×2 的简单立方球堆中，共有多少对相切球？",hint:"公式为 (m−1)np+m(n−1)p+mn(p−1)。",answer:"46",choices:["38","42","46","52"],explanation:"三个方向的相切对数依次为 3×3×2=18、4×2×2=16、4×3×1=12，总计 46 对。",visual:r=>packingVisual("pairs46",r)},
+      {prompt:"一层三角形密堆每边有 8 个球，这一层共有多少个球？",hint:"使用三角形数 Tₙ=n(n+1)/2。",answer:"36",choices:["28","32","36","40"],explanation:"T₈=8×9÷2=36。不要误算成正方形排列的 8²。",visual:r=>packingVisual("triangle36",r)},
+      {prompt:"相同球堆成 5 层正四面体，各层边长依次为 1、2、3、4、5，共有多少球？",hint:"把前五个三角形数 1、3、6、10、15 相加。",answer:"35",choices:["30","35","40","45"],explanation:"总数为 1+3+6+10+15=35，也可用四面体数公式 n(n+1)(n+2)/6。",visual:r=>packingVisual("tetra35",r)},
+      {prompt:"六个半径为 R 的球，其球心位于正八面体六个顶点且相邻球相切。中心空隙球半径 r 为？",hint:"正八面体棱长为 2R，中心到顶点距离为 √2R。",answer:"(√2−1)R",choices:["(√2−1)R","(√3−1)R/2","(√6−2)R/2","R/2"],explanation:"小球球心在正八面体中心，到任一大球球心的距离为 √2R=R+r，所以 r=(√2−1)R。",visual:r=>packingVisual("octaVoid",r)}
     ]
   },
   {
@@ -323,22 +391,41 @@ const levels = [
       {prompt:"P 沿正方形 ABCD 的边界运动，M 为 A₁P 的中点。M 的轨迹是？",hint:"整个边界经过同一个位似变换，形状不会改变。",answer:"正方形边界",choices:["四条独立线段","正方形边界","正方形区域","圆周"],explanation:"M 是 P 在位似中心 A₁、比例 1/2 下的像，所以轨迹是一个与 ABCD 平行、边长为其一半的正方形边界。",visual:r=>locusVisual("boundary",r)},
       {prompt:"P 可在正方形面 ABCD 内部及边界任意运动，M 为 A₁P 的中点。M 的轨迹是？",hint:"注意 P 的运动范围从“边界”扩大成了“整个面”。",answer:"正方形区域",choices:["正方形边界","正方形区域","四棱锥表面","一条线段"],explanation:"位似会把整个正方形面映成一个边长减半的正方形区域，而不只是它的边界。",visual:r=>locusVisual("region",r)},
       {prompt:"P 在球 O 的球面上运动，Q 为球外一定点，M 为 PQ 的中点。M 的轨迹是？",hint:"把球面以 Q 为中心作比例 1/2 的位似。",answer:"半径 R/2 的球面",choices:["半径 R/2 的球面","半径 R 的球面","一个圆面","一条椭圆"],explanation:"M 是 P 关于位似中心 Q、比例 1/2 的像，故轨迹为球面；球心是 OQ 中点，半径为 R/2。",visual:r=>locusVisual("sphere",r)},
-      {prompt:"P 在正方体的整个表面运动，C 为固定顶点，M 为 CP 的中点。M 的轨迹是？",hint:"仍是位似，但这次被映射的是整个正方体表面。",answer:"棱长减半的小正方体表面",choices:["棱长减半的小正方体表面","小正方体内部","以 C 为球心的球面","六个互不相连的正方形"],explanation:"以 C 为中心、比例 1/2 位似，正方体表面映成一个与原正方体同向、棱长为原来一半的小正方体表面。",visual:r=>locusVisual("cube",r)}
+      {prompt:"P 在正方体的整个表面运动，C 为固定顶点，M 为 CP 的中点。M 的轨迹是？",hint:"仍是位似，但这次被映射的是整个正方体表面。",answer:"棱长减半的小正方体表面",choices:["棱长减半的小正方体表面","小正方体内部","以 C 为球心的球面","六个互不相连的正方形"],explanation:"以 C 为中心、比例 1/2 位似，正方体表面映成一个与原正方体同向、棱长为原来一半的小正方体表面。",visual:r=>locusVisual("cube",r)},
+      {prompt:"P 在线段 AB 上运动，点 M 满足 A₁M:MP=2:1。M 的轨迹长度是多少？",hint:"M 是 P 在以 A₁ 为中心、比例 2/3 的位似下的像。",answer:"2AB/3",choices:["AB/3","AB/2","2AB/3","AB"],explanation:"由 A₁M:MP=2:1 得 A₁M/A₁P=2/3，所以 AB 的像线段长度为 2AB/3。",visual:r=>locusVisual("segment23",r)},
+      {prompt:"P 在半径为 R 的圆周上运动，Q 为定点，M 为 PQ 的中点。M 的轨迹是？",hint:"圆周在位似下仍是圆周，半径按位似比缩放。",answer:"半径 R/2 的圆周",choices:["半径 R/2 的圆周","半径 R 的圆周","半径 R/2 的圆面","一条椭圆"],explanation:"以 Q 为位似中心、比例 1/2，原圆周映成半径为 R/2 的圆周，圆心是 OQ 的中点。",visual:r=>locusVisual("circle",r)},
+      {prompt:"P 可在半径为 R 的实心球内部及球面上运动，Q 为定点，M 为 PQ 中点。M 的轨迹是？",hint:"这次 P 的范围包含球的内部，注意轨迹不是只有球面。",answer:"半径 R/2 的实心球",choices:["半径 R/2 的球面","半径 R/2 的实心球","半径 R 的实心球","一个圆面"],explanation:"整个闭球在比例 1/2 的位似下映成半径 R/2 的闭球，所以轨迹包含内部，是实心球。",visual:r=>locusVisual("ball",r)},
+      {prompt:"P 在平面 α 内任意运动，Q 是平面外定点，M 为 PQ 中点。M 的轨迹是？",hint:"把整个平面以 Q 为中心作比例 1/2 的位似。",answer:"与 α 平行的平面",choices:["平面 α 本身","与 α 平行的平面","过 Q 且垂直 α 的直线","一个半平面"],explanation:"平面不经过位似中心 Q，因此其像是与 α 平行的平面；它位于 Q 与 α 之间的中间位置。",visual:r=>locusVisual("plane",r)},
+      {prompt:"P 在球 O 的球面上运动，Q 为定点，且 PM:MQ=2:1。M 的轨迹球半径是？",hint:"由分点公式求 M 相对于 Q 的位似比例。",answer:"R/3",choices:["R/3","R/2","2R/3","R"],explanation:"PM:MQ=2:1，所以 QM/QP=1/3。M 是 P 关于中心 Q、比例 1/3 的像，轨迹球半径为 R/3。",visual:r=>locusVisual("sphereThird",r)}
     ]
   }
 ];
 
 const totalQuestions=levels.reduce((sum,l)=>sum+l.questions.length,0);
+const levelOffsets=[];
+levels.reduce((sum,level)=>{ levelOffsets.push(sum); return sum+level.questions.length; },0);
 let state={level:0,question:0,score:0,streak:0,results:Array(totalQuestions).fill(null),answered:false,practice:false,musicOn:true};
 
-function globalIndex(){ return state.level*5+state.question; }
+function globalIndex(){ return levelOffsets[state.level]+state.question; }
 function currentQuestion(){ return levels[state.level].questions[state.question]; }
+
+function animateQuestionIn(reveal=false){
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const targets=reveal?[dom.stage,dom.feedback]:[dom.question,dom.hint,dom.stage,dom.choices];
+  targets.forEach((element,index)=>{
+    element.getAnimations?.().forEach(animation=>animation.cancel());
+    element.animate([
+      {opacity:0,transform:`translate3d(0,${reveal ? 8 : 14}px,0) scale(${reveal ? .992 : .985})`},
+      {opacity:1,transform:"translate3d(0,0,0) scale(1)"}
+    ],{duration:reveal?360:460,delay:index*38,easing:"cubic-bezier(.16,1,.3,1)",fill:"both"});
+  });
+}
 
 function renderRoute(){
   const current=globalIndex();
   dom.route.innerHTML=levels.map((level,li)=>{
-    const start=li*5;
-    const complete=state.results.slice(start,start+5).every(v=>v!==null);
+    const start=levelOffsets[li];
+    const complete=state.results.slice(start,start+level.questions.length).every(v=>v!==null);
     const cls=li===state.level?" active":complete?" complete":"";
     const dots=level.questions.map((_,qi)=>{
       const idx=start+qi;
@@ -372,6 +459,7 @@ function renderQuestion(){
     dom.choices.querySelectorAll(".answer-button").forEach((button,i)=>button.addEventListener("click",()=>grade(q.choices[i],button)));
   }
   renderRoute();
+  animateQuestionIn(false);
 }
 
 function grade(value,selectedButton){
@@ -401,6 +489,7 @@ function grade(value,selectedButton){
   dom.next.querySelector("span").textContent=idx===totalQuestions-1?"查看任务报告":correct?"进入下一题":"带着解析继续";
   dom.retry.hidden=correct;
   renderRoute();
+  animateQuestionIn(true);
   playTone(correct);
 }
 
@@ -442,23 +531,71 @@ function initAudio(){
   const AudioCtx=window.AudioContext||window.webkitAudioContext;
   if(!AudioCtx) return;
   const ctx=new AudioCtx();
-  const master=ctx.createGain(); master.gain.value=.62; master.connect(ctx.destination);
-  const pad=ctx.createGain(); pad.gain.value=.012; pad.connect(master);
-  [110,164.81,220].forEach((frequency,i)=>{
-    const osc=ctx.createOscillator(), gain=ctx.createGain();
-    osc.type=i===1?"triangle":"sine"; osc.frequency.value=frequency; gain.gain.value=i===0?.5:.22;
-    osc.connect(gain).connect(pad); osc.start();
-  });
-  audio={ctx,master,pad,timer:null,step:0};
-  const notes=[261.63,329.63,392,493.88,392,329.63,293.66,392];
-  const tick=()=>{
-    if(!state.musicOn||ctx.state!=="running") return;
-    const osc=ctx.createOscillator(), gain=ctx.createGain(), now=ctx.currentTime;
-    osc.type="sine"; osc.frequency.value=notes[audio.step++%notes.length]/2;
-    gain.gain.setValueAtTime(0,now); gain.gain.linearRampToValueAtTime(.018,now+.06); gain.gain.exponentialRampToValueAtTime(.0001,now+.65);
-    osc.connect(gain).connect(master); osc.start(now); osc.stop(now+.7);
+  const master=ctx.createGain(), compressor=ctx.createDynamicsCompressor(), music=ctx.createGain();
+  master.gain.value=.46;
+  compressor.threshold.value=-24; compressor.knee.value=18; compressor.ratio.value=4; compressor.attack.value=.01; compressor.release.value=.24;
+  music.gain.value=.52;
+  music.connect(master); master.connect(compressor).connect(ctx.destination);
+
+  const delay=ctx.createDelay(.8), feedback=ctx.createGain(), delayFilter=ctx.createBiquadFilter();
+  delay.delayTime.value=.27; feedback.gain.value=.24; delayFilter.type="lowpass"; delayFilter.frequency.value=2600;
+  music.connect(delay); delay.connect(delayFilter).connect(feedback).connect(delay); delayFilter.connect(master);
+
+  const noiseBuffer=ctx.createBuffer(1,Math.ceil(ctx.sampleRate*.18),ctx.sampleRate), noiseData=noiseBuffer.getChannelData(0);
+  for(let i=0;i<noiseData.length;i++) noiseData[i]=(Math.random()*2-1)*(1-i/noiseData.length);
+  audio={ctx,master,music,timer:null,step:0,nextNoteTime:ctx.currentTime+.06,noiseBuffer};
+
+  const voice=(frequency,time,duration,volume,type="sine",detune=0)=>{
+    const osc=ctx.createOscillator(), gain=ctx.createGain(), filter=ctx.createBiquadFilter();
+    osc.type=type; osc.frequency.setValueAtTime(frequency,time); osc.detune.value=detune;
+    filter.type="lowpass"; filter.frequency.setValueAtTime(type==="triangle"?2200:3400,time); filter.Q.value=.7;
+    gain.gain.setValueAtTime(.0001,time); gain.gain.exponentialRampToValueAtTime(volume,time+.018);
+    gain.gain.exponentialRampToValueAtTime(Math.max(.0001,volume*.22),time+duration*.55); gain.gain.exponentialRampToValueAtTime(.0001,time+duration);
+    osc.connect(filter).connect(gain).connect(music); osc.start(time); osc.stop(time+duration+.03);
   };
-  tick(); audio.timer=setInterval(tick,760);
+  const noise=(time,duration,volume,frequency)=>{
+    const source=ctx.createBufferSource(), filter=ctx.createBiquadFilter(), gain=ctx.createGain();
+    source.buffer=noiseBuffer; filter.type="bandpass"; filter.frequency.value=frequency; filter.Q.value=.8;
+    gain.gain.setValueAtTime(volume,time); gain.gain.exponentialRampToValueAtTime(.0001,time+duration);
+    source.connect(filter).connect(gain).connect(music); source.start(time); source.stop(time+duration);
+  };
+  const kick=time=>{
+    const osc=ctx.createOscillator(), gain=ctx.createGain();
+    osc.type="sine"; osc.frequency.setValueAtTime(112,time); osc.frequency.exponentialRampToValueAtTime(46,time+.13);
+    gain.gain.setValueAtTime(.09,time); gain.gain.exponentialRampToValueAtTime(.0001,time+.22);
+    osc.connect(gain).connect(music); osc.start(time); osc.stop(time+.24);
+  };
+
+  const chords=[
+    [110,164.81,196,261.63,293.66],
+    [130.81,196,220,293.66,329.63],
+    [164.81,220,293.66,392,440],
+    [98,146.83,164.81,220,293.66]
+  ];
+  const melody=[659.25,null,783.99,null,880,783.99,null,587.33,659.25,null,523.25,null,587.33,659.25,null,440];
+  const bassPatterns=[[0,6,10],[0,7,10],[0,6,12],[0,5,10]];
+  const stepLength=60/84/4;
+  const scheduleGroove=(step,time)=>{
+    const bar=Math.floor(step/16)%4, beat=step%16;
+    if(beat===0) chords[bar].forEach((frequency,i)=>voice(frequency,time,stepLength*14,.012-i*.0012,i<2?"sine":"triangle",i%2?3:-3));
+    if(bassPatterns[bar].includes(beat)) voice(chords[bar][0],time,stepLength*3.4,.055,"sine");
+    if(beat===0||beat===8||(bar===3&&beat===11)) kick(time);
+    if(beat===4||beat===12){ noise(time,.13,.037,1250); voice(185,time,.12,.018,"triangle"); }
+    if(beat%2===0) noise(time,.045,beat%4===0?.012:.008,5600);
+    const note=melody[(step+bar*3)%melody.length];
+    if(note&&[1,3,6,9,11,14].includes(beat)){
+      voice(note,time,stepLength*2.7,.028,"sine");
+      voice(note*2,time,stepLength*1.4,.006,"triangle",-5);
+    }
+  };
+  const scheduler=()=>{
+    if(!state.musicOn||ctx.state!=="running") return;
+    while(audio.nextNoteTime<ctx.currentTime+.26){
+      scheduleGroove(audio.step,audio.nextNoteTime);
+      audio.nextNoteTime+=stepLength; audio.step++;
+    }
+  };
+  scheduler(); audio.timer=setInterval(scheduler,60);
 }
 
 function playTone(correct){
